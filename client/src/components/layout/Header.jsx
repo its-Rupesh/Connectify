@@ -6,16 +6,21 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
-import { orange } from "../../constants/color";
 import {
   Add as AddIcon,
   Menu as MenuIcon,
   Search as SearchIcon,
   Group as GroupIcon,
   Logout as LogoutIcon,
+  Notifications as NotificationIcon,
 } from "@mui/icons-material";
+import React, { Suspense, useState, lazy } from "react";
 import { useNavigate } from "react-router-dom";
+import { orange } from "../../constants/color";
+
+const SearchDialog = lazy(() => import("../specific/Search"));
+const NotificaionDialog = lazy(() => import("../specific/Notificaions"));
+const NewGroupsDialog = lazy(() => import("../specific/NewGroups"));
 
 const Header = () => {
   const navigate = useNavigate();
@@ -27,11 +32,14 @@ const Header = () => {
   const handleMobile = () => {
     setIsmobile((prev) => !prev);
   };
-  const openSearchDialog = () => {
+  const openSearch = () => {
     setIsSearch((prev) => !prev);
   };
   const openNewGroup = () => {
     setIsNewGroup((prev) => !prev);
+  };
+  const openNotification = () => {
+    setIsNotification((prev) => !prev);
   };
   const LogoutHandler = () => {
     console.log("logout");
@@ -58,7 +66,7 @@ const Header = () => {
               <IconBtn
                 title={"Search"}
                 icon={<SearchIcon />}
-                onClick={openSearchDialog}
+                onClick={openSearch}
               />
 
               <IconBtn
@@ -72,6 +80,11 @@ const Header = () => {
                 onClick={NavigateToGroup}
               />
               <IconBtn
+                title={"Notifications"}
+                icon={<NotificationIcon />}
+                onClick={openNotification}
+              />
+              <IconBtn
                 title={"Logout"}
                 icon={<LogoutIcon />}
                 onClick={LogoutHandler}
@@ -80,6 +93,24 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </Box>
+
+      {isSearch && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <SearchDialog />
+        </Suspense>
+      )}
+
+      {isNotification && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <NotificaionDialog />
+        </Suspense>
+      )}
+
+      {isNewGroup && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <NewGroupsDialog />
+        </Suspense>
+      )}
     </>
   );
 };
