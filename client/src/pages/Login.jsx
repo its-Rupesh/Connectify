@@ -11,7 +11,7 @@ import {
 import { CameraAlt as CameraAltIcon } from "@mui/icons-material";
 import React, { useState } from "react";
 import { useFileHandler, useInputValidation } from "6pp";
-import VisuallHidden from "../components/styles/styledComponent";
+import { VisuallyHidden } from "../components/styles/styledComponent";
 import { usernameValidator } from "../utils/validators";
 
 const Login = () => {
@@ -136,7 +136,7 @@ const Login = () => {
                   >
                     <>
                       <CameraAltIcon />
-                      <VisuallHidden
+                      <VisuallyHidden
                         type="file"
                         onChange={avatar.changeHandler}
                       />

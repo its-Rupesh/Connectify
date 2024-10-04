@@ -7,7 +7,9 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <HelmetProvider>
       <CssBaseline />
-      <App />
+      <div onContextMenu={(e) => e.preventDefault()}>
+        <App />
+      </div>
     </HelmetProvider>
   </StrictMode>
 );

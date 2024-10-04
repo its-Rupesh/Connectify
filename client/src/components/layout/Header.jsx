@@ -1,5 +1,6 @@
 import {
   AppBar,
+  Backdrop,
   Box,
   IconButton,
   Toolbar,
@@ -23,6 +24,7 @@ const NotificaionDialog = lazy(() => import("../specific/Notificaions"));
 const NewGroupsDialog = lazy(() => import("../specific/NewGroups"));
 
 const Header = () => {
+ 
   const navigate = useNavigate();
   const [ismobile, setIsmobile] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
@@ -95,19 +97,19 @@ const Header = () => {
       </Box>
 
       {isSearch && (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Backdrop open />}>
           <SearchDialog />
         </Suspense>
       )}
 
       {isNotification && (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Backdrop open />}>
           <NotificaionDialog />
         </Suspense>
       )}
 
       {isNewGroup && (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Backdrop open />}>
           <NewGroupsDialog />
         </Suspense>
       )}
