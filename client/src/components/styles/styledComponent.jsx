@@ -13,6 +13,7 @@ export const VisuallyHidden = styled("input")({
 });
 export const Link = styled(LinkComponent)`
   text-decoration: none;
+  
   color: black;
   padding: 1rem;
   &:hover {
