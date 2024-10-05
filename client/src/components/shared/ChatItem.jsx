@@ -30,7 +30,7 @@ const ChatItem = ({
           color: sameSender ? "white" : "unset",
           position: "relative",
         }}
-      >
+        >
         <AvatarCard avatar={avatar} />
         <Stack>
           <Typography>{name}</Typography>
