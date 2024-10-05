@@ -1,15 +1,13 @@
-import React, { memo } from "react";
 import {
-  Dialog,
-  DialogTitle,
-  Stack,
-  Typography,
-  ListItem,
-  IconButton,
   Avatar,
   Button,
+  Dialog,
+  DialogTitle,
+  ListItem,
+  Stack,
+  Typography,
 } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
+import React, { memo } from "react";
 import { sampleNotifications } from "../../constants/sampleData";
 
 const Notificaions = () => {
@@ -36,6 +34,7 @@ const Notificaions = () => {
   );
 };
 const NotificaionsItem = memo(({ sender, _id, handler }) => {
+  const { avatar } = sender;
   return (
     <ListItem>
       <Stack
@@ -44,7 +43,7 @@ const NotificaionsItem = memo(({ sender, _id, handler }) => {
         spacing={"1rem"}
         width={"100%"}
       >
-        <Avatar />
+        <Avatar src={avatar} />
 
         <Typography
           variant="body1"

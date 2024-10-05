@@ -12,7 +12,7 @@ const UserItem = ({ user, handler, handlerIsLoading }) => {
         spacing={"1rem"}
         width={"100%"}
       >
-        <Avatar />
+        <Avatar src={avatar} />
 
         <Typography
           variant="body1"
