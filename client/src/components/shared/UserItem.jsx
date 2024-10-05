@@ -3,7 +3,7 @@ import { Add as AddIcon } from "@mui/icons-material";
 import { Avatar, IconButton, ListItem, Stack, Typography } from "@mui/material";
 const UserItem = ({ user, handler, handlerIsLoading }) => {
   const { name, _id, avatar } = user;
-  //console.log("user", user);
+  console.log("user", user);
   return (
     <ListItem>
       <Stack
