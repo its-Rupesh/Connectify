@@ -18,7 +18,7 @@ const UserItem = ({ user, handler, handlerIsLoading }) => {
           variant="body1"
           sx={{
             flexGrow: 1,
-            display: "-webkit-flex",
+            display: "-webkit-box",
             WebkitLineClamp: 1,
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
