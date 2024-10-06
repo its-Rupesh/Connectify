@@ -7,6 +7,13 @@ import React, { useRef } from "react";
 import FileMenu from "../components/dialogs/FileMenu";
 import AppLayout from "../components/layout/AppLayout";
 import { InputBox } from "../components/styles/styledComponent";
+import { sampleMessage } from "../constants/sampleData";
+import MessageComponent from "../components/shared/MessageComponent";
+
+const user = {
+  _id: "1",
+  name: "Lokesh",
+};
 
 const Chat = () => {
   const containerRef = useRef(null);
@@ -22,7 +29,9 @@ const Chat = () => {
         height={"90%"}
         sx={{ overflowX: "hidden", overflowY: "auto" }}
       >
-        {/*Messasge Render*/}
+        {sampleMessage.map((i) => (
+          <MessageComponent message={i} user={user} key={i._id} />
+        ))}
       </Stack>
       <form style={{ height: "10%" }}>
         <Stack
