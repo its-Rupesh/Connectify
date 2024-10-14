@@ -1,17 +1,18 @@
 import React from "react";
 import moment from "moment";
 import AdminLayout from "../../components/layout/AdminLayout";
-import { Container, Paper, Stack, Typography, Box } from "@mui/material";
+import { Container, Paper, Stack, Typography, Box, Icon } from "@mui/material";
 import {
   AdminPanelSettings as AdminPanelSettingsIcon,
   Group as GroupIcon,
   Notifications as NotificationsIcon,
   Person as PersonIcon,
   Widgets,
+  Message as MessageIcon,
 } from "@mui/icons-material";
 import { SearchField } from "../../components/styles/styledComponent";
 import { CurveButton } from "../../components/styles/styledComponent";
-
+import { LineChart, DoughnutChart } from "../../components/specific/Chart";
 const Dashboard = () => {
   const AppBar = (
     <Paper
@@ -30,7 +31,18 @@ const Dashboard = () => {
       </Stack>
     </Paper>
   );
-  const Widgets = <Stack direction={{ xs: "column", sm: "row" }}></Stack>;
+  const Widgets = (
+    <Stack
+      direction={{ xs: "column", sm: "row" }}
+      justifyContent={"space-between"}
+      alignItems={"center"}
+      margin={"2rem 0"}
+    >
+      <Widget title={"Users"} value={1} icon={<PersonIcon />} />
+      <Widget title={"Chats"} value={2} icon={<GroupIcon />} />
+      <Widget title={"Messages"} value={3} icon={<MessageIcon />} />
+    </Stack>
+  );
   return (
     <AdminLayout>
       <Container component={"main"}>
@@ -47,7 +59,7 @@ const Dashboard = () => {
             }}
           >
             <Typography>Last Messages</Typography>
-            {"chat"}
+            <LineChart value={[12, 3, 45, 69]} />
           </Paper>
           <Paper
             elevation={3}
@@ -64,7 +76,7 @@ const Dashboard = () => {
               height: "25rem",
             }}
           >
-            {"Dougnut Chart"}
+            <DoughnutChart />
             <Stack
               position={"absolute"}
               direction={"row"}
@@ -84,5 +96,36 @@ const Dashboard = () => {
     </AdminLayout>
   );
 };
-
+const Widget = ({ title, value, icon }) => (
+  <Paper
+    elevation={3}
+    sx={{
+      padding: "2rem",
+      margin: "2rem 0",
+      borderRadius: "1rem",
+      width: "20rem",
+    }}
+  >
+    <Stack alignItems={"center"} spacing={"1rem"}>
+      <Typography
+        sx={{
+          color: "rbga(0,0,0,0.7)",
+          borderRadius: "50%",
+          border: "5px solid rgba(0,0,0,0.9)",
+          width: "5rem",
+          height: "5rem",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {value}
+      </Typography>
+      <Stack direction={"row"} spacing={"1rem"} alignItems={"center"}>
+        {icon}
+      </Stack>
+      <Typography>{title}</Typography>
+    </Stack>
+  </Paper>
+);
 export default Dashboard;
