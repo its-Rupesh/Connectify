@@ -45,16 +45,16 @@ export const LineChart = ({ value = [] }) => {
     labels,
     datasets: [
       {
-        // data: value, // Y-axis values
-        // label: "Revenue", // Name of the dataset
-        // fill: true, // This enables the fill below the line
-        // backgroundColor: "rgba(75,192,192,0.2)", // Fill color under the line
-        // borderColor: "rgba(75,192,192,1)", // Line color
-        // pointBackgroundColor: "rgba(75,192,192,1)", // Point color
-        // pointBorderColor: "#fff",
-        // pointHoverBackgroundColor: "#fff",
-        // pointHoverBorderColor: "rgba(75,192,192,1)",
-        //tension: 0.4, // Optional: Adds smoothness to the line curve
+        data: value, // Y-axis values
+        label: "Revenue", // Name of the dataset
+        fill: true, // This enables the fill below the line
+        backgroundColor: "rgba(75,192,192,0.2)", // Fill color under the line
+        borderColor: "rgba(75,192,192,1)", // Line color
+        pointBackgroundColor: "rgba(75,192,192,1)", // Point color
+        pointBorderColor: "#fff",
+        pointHoverBackgroundColor: "#fff",
+        pointHoverBorderColor: "rgba(75,192,192,1)",
+        tension: 0.4, // Optional: Adds smoothness to the line curve
       },
     ],
   };
