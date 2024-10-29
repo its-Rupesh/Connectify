@@ -1,65 +1,113 @@
 import React from "react";
+import { Doughnut, Line } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  Tooltip,
   CategoryScale,
+  Tooltip,
+  Filler,
   LinearScale,
   PointElement,
   LineElement,
   ArcElement,
   Legend,
-  plugins,
+  Chart as ChartJS,
   scales,
 } from "chart.js";
-import { Line, Doughnut } from "react-chartjs-2";
+import { X } from "@mui/icons-material";
+import {
+  lightorange,
+  lightpurple,
+  orange,
+  purple,
+} from "../../constants/color";
 import { getLast7Days } from "../../lib/feature";
+import zIndex from "@mui/material/styles/zIndex";
 
+const labels = getLast7Days();
+
+// Register the necessary Chart.js components
 ChartJS.register(
-  Tooltip,
   CategoryScale,
+  Tooltip,
+  Filler,
   LinearScale,
   PointElement,
   LineElement,
   ArcElement,
   Legend
 );
-const labels = getLast7Days();
 
-const lineChartOptions = {
-  responsive: true,
-  plugins: {
-    Legend: {
-      display: false,
-    },
-    title: {
-      display: false,
-    },
-  },
-  scales: {
-    x: { grid: { display: false } },
-    y: { beginAtZero: true, grid: { display: false } },
-  },
-};
-export const LineChart = ({ value = [] }) => {
+const LineChart = ({ value = [] }) => {
+  // Correctly structured `data` object
   const data = {
-    labels,
+    labels: labels, // Labels for X-axis
     datasets: [
       {
-        data: value, // Y-axis values
-        label: "Revenue", // Name of the dataset
-        fill: true, // This enables the fill below the line
-        backgroundColor: "rgba(75,192,192,0.2)", // Fill color under the line
-        borderColor: "rgba(75,192,192,1)", // Line color
-        pointBackgroundColor: "rgba(75,192,192,1)", // Point color
-        pointBorderColor: "#fff",
-        pointHoverBackgroundColor: "#fff",
-        pointHoverBorderColor: "rgba(75,192,192,1)",
-        tension: 0.4, // Optional: Adds smoothness to the line curve
+        label: "Weekly Data", // Label for the dataset
+        data: value, // Data points
+        fill: true,
+        backgroundColor: lightpurple, // Fill color under the line
+        borderColor: purple, // Line color
+        borderWidth: 2, // Line width
       },
     ],
   };
-  return <Line data={data} options={lineChartOptions} />;
+
+  const LineChartoptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+        position: "top",
+      },
+      title: { display: false },
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true, grid: { display: false } },
+    },
+  };
+
+  return <Line data={data} options={LineChartoptions} />;
 };
-export const DoughnutChart = () => {
-  return <div>Chart</div>;
+const DoughnutChartOptions = {
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    title: { display: false },
+    scales: {
+      x: {
+        display: false, // Disable x-axis
+      },
+      y: {
+        display: false, // Disable y-axis
+      },
+      cutout: 120,
+    },
+  },
 };
+const DoughnutChart = ({ value = [], labels = [] }) => {
+  const data = {
+    labels, // Labels for X-axis
+    datasets: [
+      {
+        data: value, // Data points
+        backgroundColor: [lightpurple, lightorange], // Fill color under the line
+        borderColor: [purple, orange], // Line color
+        borderWidth: 2, // Line width
+        hoverBackgroundColor: [purple, orange],
+        offset: 12,
+      },
+    ],
+  };
+  return (
+    <Doughnut
+      style={{ zIndex: 10 }}
+      data={data}
+      options={DoughnutChartOptions}
+    />
+  );
+};
+
+export { LineChart, DoughnutChart };
