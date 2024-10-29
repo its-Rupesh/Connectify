@@ -3,6 +3,7 @@ import Table from "../../components/shared/Table";
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
 import { dashboardData } from "../../constants/sampleData";
+import { transformImage } from "../../lib/feature";
 const columns = [
   {
     field: "id",
@@ -47,8 +48,15 @@ const columns = [
 const UserManagement = () => {
   const [rows, setrows] = useState([]);
   useEffect(() => {
-    setrows(dashboardData.users.map((i) => ({ ...i, id: i._id })));
+    setrows(
+      dashboardData.users.map((i) => ({
+        ...i,
+        id: i._id,
+        avatar: transformImage(i.avatar, 50),
+      }))
+    );
   }, []);
+  console.log(rows);
   return (
     <AdminLayout>
       <Table heading={"All Users"} columns={columns} rows={rows} />
