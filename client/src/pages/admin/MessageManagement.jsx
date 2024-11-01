@@ -22,11 +22,11 @@ const columns = [
     renderCell: (params) => {
       const { attachements } = params.row;
       return attachements?.length > 0
-        ? attachements.map((i) => {
+        ? attachements.map((i, index) => {
             const url = i.url;
             const file = fileFormat(url);
             return (
-              <Box>
+              <Box key={index}>
                 <a
                   href={url}
                   download
