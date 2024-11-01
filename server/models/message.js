@@ -1,4 +1,4 @@
-import { Schema, model, models } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 
 // Schema for Messages
 const schema = new Schema(
@@ -27,4 +27,4 @@ const schema = new Schema(
 );
 
 // models.Users check if there is already model named Message
-export const Message = models.Message || model("Message", schema);
+export const Message = mongoose.models.Message || model("Message", schema);
