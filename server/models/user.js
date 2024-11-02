@@ -2,6 +2,7 @@ import { hash } from "bcrypt";
 import mongoose, { Schema, model } from "mongoose";
 
 // Schema for User When he login || Sign in
+// select matlab jab  koi user fo call kare toh password nahi jana chaiye
 const schema = new Schema(
   {
     name: {
