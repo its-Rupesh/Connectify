@@ -30,7 +30,7 @@ const schema = new Schema(
 // type of middleware that allows you to run some code before a document is saved to the database. use for validating and hashing
 schema.pre("save", async function (next) {
   // if only when password field saved then rehash if not call next ()->middleware[eg... return ;]
-  if (!this.isModified("password")) next();
+  if (!this.isModified("password")) return next();
   this.password = await hash(this.password, 10);
 });
 
