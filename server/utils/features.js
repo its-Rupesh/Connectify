@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// MongoDB Connection
 const connectDB = (url) => {
   mongoose
     .connect(url, { dbName: "Connectify" })
@@ -8,4 +9,5 @@ const connectDB = (url) => {
       throw err;
     });
 };
+
 export { connectDB };

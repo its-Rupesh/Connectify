@@ -3,11 +3,16 @@ import userRouter from "./routes/user.js";
 import { connectDB } from "./utils/features.js";
 import dotenv from "dotenv";
 
+//MongoDb Connection Using env file
 dotenv.config({ path: "./.env" });
 const mongoURL = process.env.MONGO_URL;
 connectDB(mongoURL);
 
 const app = express();
+
+//Middleware
+app.use(express.json());
+
 const PORT = 8000;
 
 app.use("/user", userRouter);
