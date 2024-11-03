@@ -22,23 +22,20 @@ const newUser = async (req, res) => {
 
   sendToken(res, user, 201, "User Created");
 };
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { username, password } = req.body;
 
   // Select [User Schema ->False] To select password also we use select
   const user = await User.findOne({ username }).select("+password");
-  if (!user) {
-    return res.status(300).json({ message: "No User Available" });
-  }
-  console.log("user", user);
-  console.log("req->password", password);
-  console.log("dbs->password", user.password);
+  if (!user) return next(new Error("No Such User Present"));
+
+  // console.log("user", user);
+  // console.log("req->password", password);
+  // console.log("dbs->password", user.password);
+  // console.log("isMatch", isMatch);
   const isMatch = await compare(password, user.password);
-  console.log("isMatch", isMatch);
-  if (!isMatch) {
-    return res.status(400).json({ message: "Invalid Password" });
-  }
+  if (!isMatch) return next(new Error("Invalid Password"));
   sendToken(res, user, 200, `Welcome Back ${user.name}`);
 };
-
-export { login, newUser };
+const getMyProfile = async (res, req) => {};
+export { login, newUser, getMyProfile };
