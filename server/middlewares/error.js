@@ -1,3 +1,4 @@
+// Error Handling
 const errorMiddleware = (err, req, res, next) => {
   err.message = err.message || "Internal Error";
   err.statusCode = err.statusCode || 500;
@@ -7,4 +8,12 @@ const errorMiddleware = (err, req, res, next) => {
     message: err.message,
   });
 };
-export { errorMiddleware };
+
+const TryCatch = (passFuncn) => async (req, res, next) => {
+  try {
+    passFuncn(req,res, next);
+  } catch (error) {
+    next(error);
+  }
+};
+export { errorMiddleware, TryCatch };
