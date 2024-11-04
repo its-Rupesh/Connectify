@@ -3,6 +3,7 @@ import userRouter from "./routes/user.js";
 import { connectDB } from "./utils/features.js";
 import dotenv from "dotenv";
 import { errorMiddleware } from "./middlewares/error.js";
+import cookieParser from "cookie-parser";
 
 //MongoDb Connection Using env file
 dotenv.config({ path: "./.env" });
@@ -13,7 +14,7 @@ const app = express();
 
 //Middleware
 app.use(express.json());
-
+app.use(cookieParser());
 const PORT = 8000;
 
 // Routing
