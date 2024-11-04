@@ -1,6 +1,6 @@
 import { compare } from "bcrypt";
 import { User } from "../models/user.js";
-import { sendToken } from "../utils/features.js";
+import { cookieOptions, sendToken } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 
 //Create New User and Save it to Database and cookies
@@ -40,10 +40,39 @@ const login = async (req, res, next) => {
     next(error);
   }
 };
-const getMyProfile = (req, res) => {
-  return res.status(200).json({
-    success: true,
-    data: req.user,
-  });
+const getMyProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    return res.status(200).json({
+      success: true,
+      data: req.user,
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
-export { login, newUser, getMyProfile };
+const logout = async (req, res) => {
+  try {
+    return res
+      .status(200)
+      .cookie("Connectify-Token", "", { ...cookieOptions, maxAge: 0 })
+      .json({
+        success: true,
+        message: "Logged Out Successfully",
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+const searchUser = async (req, res) => {
+  try {
+    // name{*<-url me chaiye "name"} Taken from Search query
+    const { name } = req.query;
+
+    return res.status(200).json({ success: true, message: name });
+  } catch (error) {
+    next(error);
+  }
+};
+export { login, newUser, getMyProfile, logout, searchUser };

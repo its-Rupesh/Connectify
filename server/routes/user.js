@@ -1,5 +1,11 @@
 import express from "express";
-import { getMyProfile, login, newUser } from "../controllers/user.js";
+import {
+  getMyProfile,
+  login,
+  newUser,
+  logout,
+  searchUser,
+} from "../controllers/user.js";
 import { singleAvatar } from "../middlewares/multer.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 
@@ -13,4 +19,6 @@ app.post("/login", login);
 
 // After here user must be Logged in To Acess the routes
 app.get("/me", isAuthenticated, getMyProfile);
+app.get("/logout", isAuthenticated, logout);
+app.get("/searchUser", isAuthenticated, searchUser);
 export default app;
