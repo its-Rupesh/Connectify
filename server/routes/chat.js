@@ -5,6 +5,7 @@ import {
   getMyChat,
   getMyGroups,
   newGroupChat,
+  removeMembers,
 } from "../controllers/chat.js";
 
 //Express->Contain Router for Routing purpose
@@ -17,4 +18,5 @@ app.post("/new", newGroupChat);
 app.get("/my", getMyChat);
 app.get("/my/groups", getMyGroups);
 app.put("/addmembers", addMembers);
+app.put("/removemembers", removeMembers);
 export default app;
