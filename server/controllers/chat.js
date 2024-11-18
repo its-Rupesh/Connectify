@@ -264,6 +264,28 @@ const getChatDetails = async (req, res, next) => {
     next(error);
   }
 };
+const renameGroup = async (req, res, next) => {
+  try {
+    const chatId = req.params.id;
+    const { name } = req.body;
+    const chat = await Chat.findById(chatId);
+    if (!chat) return next(new ErrorHandler("Chat Not Found", 404));
+    if (!chat.groupchat)
+      return next(new ErrorHandler("This Is Not a Group Chat", 404));
+    if (chat.creator.toString() !== req.user.toString())
+      return next(
+        new ErrorHandler("You Are Not Allowed To remove Members", 403)
+      );
+    chat.name = name;
+    await chat.save();
+    emitEvent(req, REFETCH_CHATS, chat.members);
+    return res
+      .status(200)
+      .json({ success: true, message: "Group Rename Successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
 export {
   newGroupChat,
   getMyChat,
@@ -273,4 +295,5 @@ export {
   leaveGroup,
   sendAttachments,
   getChatDetails,
+  renameGroup,
 };
