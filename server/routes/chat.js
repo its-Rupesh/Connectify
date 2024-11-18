@@ -1,5 +1,6 @@
 import express from "express";
 import { isAuthenticated } from "../middlewares/auth.js";
+import { attachementsMulter } from "../middlewares/multer.js";
 import {
   addMembers,
   getMyChat,
@@ -7,6 +8,7 @@ import {
   newGroupChat,
   removeMembers,
   leaveGroup,
+  sendAttachments,
 } from "../controllers/chat.js";
 
 //Express->Contain Router for Routing purpose
@@ -21,4 +23,7 @@ app.get("/my/groups", getMyGroups);
 app.put("/addmembers", addMembers);
 app.put("/removemembers", removeMembers);
 app.delete("/leave/:id", leaveGroup);
+app.post("/message", attachementsMulter, sendAttachments);
+//Get Messages
+// Get Chat Details,rename,delete
 export default app;

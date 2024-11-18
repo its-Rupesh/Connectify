@@ -1,9 +1,15 @@
-import { ErrorHandler } from ".././utils/utility.js";
-import { ALERT, REFETCH_CHATS } from "../constants/events.js";
-import { getOtherMember } from "../lib/helper.js";
-import { Chat } from "../models/chat.js";
+import {
+  ALERT,
+  NEW_ATTACHEMENT,
+  NEW_MESSAGE_ALERT,
+  REFETCH_CHATS,
+} from "../constants/events.js";
 import { User } from "../models/user.js";
+import { Chat } from "../models/chat.js";
+import { Message } from "../models/message.js";
+import { getOtherMember } from "../lib/helper.js";
 import { emitEvent } from "../utils/features.js";
+import { ErrorHandler } from ".././utils/utility.js";
 const newGroupChat = async (req, res, next) => {
   try {
     // We will get name,member in req object
@@ -196,6 +202,46 @@ const leaveGroup = async (req, res, next) => {
     next(error);
   }
 };
+const sendAttachments = async (req, res, next) => {
+  try {
+    const { chatId } = req.body;
+    const [chat, me] = await Promise.all([
+      Chat.findById(chatId),
+      User.findById(req.user, "name"),
+    ]);
+    if (!chat) return next(new ErrorHandler("Chat Not found", 400));
+    const files = req.files || [];
+    if (files.length < 1)
+      return next(new ErrorHandler("Please Provide Attachements", 400));
+    const attachements = [];
+
+    const messageForDB = {
+      content: "",
+      attachements,
+      sender: me._id,
+      chat: chatId,
+    };
+    const messageForRealTime = {
+      ...messageForDB,
+      sender: {
+        _id: me._id,
+        name: me.name,
+      },
+    };
+    const message = await Message.create(messageForDB);
+    emitEvent(req, NEW_ATTACHEMENT, chat.members, {
+      message: messageForRealTime,
+      chatId,
+    });
+    emitEvent(req, NEW_MESSAGE_ALERT, chat.members, { chatId });
+    return res.status(200).json({
+      success: true,
+      message,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 export {
   newGroupChat,
   getMyChat,
@@ -203,4 +249,5 @@ export {
   addMembers,
   removeMembers,
   leaveGroup,
+  sendAttachments,
 };
