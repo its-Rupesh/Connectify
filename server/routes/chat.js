@@ -9,6 +9,7 @@ import {
   removeMembers,
   leaveGroup,
   sendAttachments,
+  getChatDetails,
 } from "../controllers/chat.js";
 
 //Express->Contain Router for Routing purpose
@@ -24,6 +25,7 @@ app.put("/addmembers", addMembers);
 app.put("/removemembers", removeMembers);
 app.delete("/leave/:id", leaveGroup);
 app.post("/message", attachementsMulter, sendAttachments);
-//Get Messages
+app.route("/:id").get(getChatDetails).put().delete();
 // Get Chat Details,rename,delete
 export default app;
+  
