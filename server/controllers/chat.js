@@ -321,6 +321,29 @@ const deleteChat = async (req, res, next) => {
     next(error);
   }
 };
+const getMessages = async (req, res, next) => {
+  try {
+    const chatId = req.params.id;
+    const { page = 1 } = req.query;
+    const result_per_page = 20;
+    const skip = (page - 1) * result_per_page;
+    const [messages, totalMessageCount] = await Promise.all([
+      Message.find({ chat: chatId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(result_per_page)
+        .populate("sender", "name avatar")
+        .lean(),
+      Message.countDocuments({ chat: chatId }),
+    ]);
+    const totalPages = Math.ceil(totalMessageCount / result_per_page) || 0;
+    return res
+      .status(200)
+      .json({ success: true, messages: messages.reverse(), totalPages });
+  } catch (error) {
+    next(error);
+  }
+};
 export {
   newGroupChat,
   getMyChat,
@@ -332,4 +355,5 @@ export {
   getChatDetails,
   renameGroup,
   deleteChat,
+  getMessages,
 };

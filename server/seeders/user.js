@@ -25,4 +25,6 @@ const createUser = async (numUsers) => {
     process.exit(1);
   }
 };
+
 export { createUser };
+

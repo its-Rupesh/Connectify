@@ -1,12 +1,11 @@
-import express from "express";
-import { connectDB } from "./utils/features.js";
-import dotenv from "dotenv";
-import { errorMiddleware } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+import express from "express";
+import { errorMiddleware } from "./middlewares/error.js";
+import { connectDB } from "./utils/features.js";
 
-import userRouter from "./routes/user.js";
 import chatRouter from "./routes/chat.js";
-import { createUser } from "./seeders/user.js";
+import userRouter from "./routes/user.js";
 
 //MongoDb Connection Using env file
 dotenv.config({ path: "./.env" });
