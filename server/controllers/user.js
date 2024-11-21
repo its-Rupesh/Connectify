@@ -147,19 +147,35 @@ const acceptrequest = async (req, res, next) => {
       request.deleteOne(),
     ]);
     emitEvent(req, REFETCH_CHATS, members);
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Friend Request Accepted",
-        senderId: request.sender._id,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Friend Request Accepted",
+      senderId: request.sender._id,
+    });
   } catch (error) {
     console.error(error);
     next(error);
   }
 };
-
+const notification = async (req, res, next) => {
+  try {
+    const request = await Request.find({ reciever: req.user }).populate(
+      "sender",
+      "name avatar"
+    );
+    const allRequest = request.map(({ _id, sender }) => ({
+      _id,
+      sender: {
+        _id: sender._id,
+        name: sender.name,
+        avatar: sender.avatar.url,
+      },
+    }));
+    return res.status(200).json({ success: true, message: allRequest });
+  } catch (error) {
+    next(error);
+  }
+};
 export {
   login,
   newUser,
@@ -168,4 +184,5 @@ export {
   searchUser,
   sendrequest,
   acceptrequest,
+  notification,
 };
