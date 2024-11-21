@@ -8,6 +8,7 @@ import {
   sendrequest,
   acceptrequest,
   notification,
+  getfriends,
 } from "../controllers/user.js";
 import { singleAvatar } from "../middlewares/multer.js";
 import { isAuthenticated } from "../middlewares/auth.js";
@@ -40,4 +41,6 @@ app.put(
   acceptrequest
 );
 app.get("/notification", notification);
+app.get("/friends", getfriends);
+
 export default app;

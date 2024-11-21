@@ -5,7 +5,7 @@ import { ErrorHandler } from "../utils/utility.js";
 import { Chat } from "../models/chat.js";
 import { Request } from "../models/request.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
-
+import { getOtherMember } from "../lib/helper.js";
 //Create New User and Save it to Database and cookies
 const newUser = async (req, res) => {
   const { name, username, password, bio } = req.body;
@@ -125,7 +125,7 @@ const acceptrequest = async (req, res, next) => {
       .populate("sender", "name")
       .populate("reciever", "name");
     if (!request) return next(new ErrorHandler("Request Not Found", 404));
-    if (request.reciever.toString() !== req.user.toString())
+    if (request.reciever._id.toString() !== req.user.toString())
       return next(
         new ErrorHandler(
           "You are Not authorized to accept or delete this request",
@@ -176,6 +176,36 @@ const notification = async (req, res, next) => {
     next(error);
   }
 };
+const getfriends = async (req, res, next) => {
+  try {
+    const chatId = req.query.chatId;
+    const chats = await Chat.find({
+      members: req.user,
+      groupchat: false,
+    }).populate("members", "name avatar");
+    const friends = chats.map(({ members }) => {
+      const otherMember = getOtherMember(members, req.user);
+      return {
+        _id: otherMember._id,
+        name: otherMember.name,
+        avatar: otherMember.avatar.url,
+      };
+    });
+    if (chatId) {
+      const chat = await Chat.findById(chatId);
+      const availableFriends = friends.filter(
+        (friend) => !chat.members.include(friend._id)
+      );
+      return res
+        .status(200)
+        .json({ success: true, availableFriends: availableFriends });
+    } else {
+      return res.status(200).json({ success: true, friends: friends });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 export {
   login,
   newUser,
@@ -185,4 +215,5 @@ export {
   sendrequest,
   acceptrequest,
   notification,
+  getfriends,
 };
