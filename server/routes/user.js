@@ -25,14 +25,9 @@ app.post("/new", singleAvatar, registerValidator(), validateHandler, newUser);
 app.post("/login", loginValidator(), validateHandler, login);
 
 // After here user must be Logged in To Acess the routes
-app.get("/me", isAuthenticated, getMyProfile);
-app.get("/logout", isAuthenticated, logout);
-app.get("/searchUser", isAuthenticated, searchUser);
-app.put(
-  "/sendrequest",
-  sendrequestValidator(),
-  validateHandler,
-  isAuthenticated,
-  sendrequest
-);
+app.use(isAuthenticated);
+app.get("/me", getMyProfile);
+app.get("/logout", logout);
+app.get("/searchUser", searchUser);
+app.put("/sendrequest", sendrequestValidator(), validateHandler, sendrequest);
 export default app;

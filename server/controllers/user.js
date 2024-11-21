@@ -1,8 +1,10 @@
 import { compare } from "bcrypt";
 import { User } from "../models/user.js";
-import { cookieOptions, sendToken } from "../utils/features.js";
+import { cookieOptions, emitEvent, sendToken } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { Chat } from "../models/chat.js";
+import { Request } from "../models/request.js";
+import { NEW_REQUEST } from "../constants/events.js";
 
 //Create New User and Save it to Database and cookies
 const newUser = async (req, res) => {
@@ -71,7 +73,11 @@ const searchUser = async (req, res, next) => {
     // name{*<-url me chaiye "name"} Taken from Search query
     const { name = "" } = req.query;
     const chat = await Chat.find({ groupchat: false, members: req.user });
+    //All User Which I have Chat
     const allUserFromChats = chat.flatMap((chat) => chat.members);
+    // In simple terms, it filters out all the users that are already in allUserFromChats
+    //This uses a regular expression ($regex) to match names in a case-insensitive manner ($options: "i").
+    //It ensures only users whose names partially match the name variable are included in the results.
     const allUserExceptMeandFriends = await User.find({
       _id: { $nin: allUserFromChats },
       name: { $regex: name, $options: "i" },
@@ -91,8 +97,24 @@ const searchUser = async (req, res, next) => {
 };
 const sendrequest = async (req, res, next) => {
   try {
-    
+    const { userId } = req.body;
+    const request = await Request.findOne({
+      $or: [
+        { sender: req.user, reciever: userId },
+        { sender: userId, reciever: req.user },
+      ],
+    });
+    if (request) return next(new ErrorHandler("Request Already sent", 400));
+    await Request.create({
+      sender: req.user,
+      reciever: userId,
+    });
+    emitEvent(req, NEW_REQUEST, [userId]);
+    return res
+      .status(200)
+      .json({ success: true, message: "Friend Request Sent" });
   } catch (error) {
+    console.error(error);
     next(error);
   }
 };

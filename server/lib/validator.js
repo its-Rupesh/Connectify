@@ -61,7 +61,7 @@ const searchUserValidator = () => [
   query("name", "Please Enter name").notEmpty(),
 ];
 const sendrequestValidator = () => [
-  query("userId", "Please Enter userId").isMongoId(),
+  body("userId", "Please Enter UserId").notEmpty(),
 ];
 export {
   registerValidator,
