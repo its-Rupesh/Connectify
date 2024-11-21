@@ -2,6 +2,7 @@ import { compare } from "bcrypt";
 import { User } from "../models/user.js";
 import { cookieOptions, sendToken } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
+import { Chat } from "../models/chat.js";
 
 //Create New User and Save it to Database and cookies
 const newUser = async (req, res) => {
@@ -52,7 +53,7 @@ const getMyProfile = async (req, res) => {
     next(error);
   }
 };
-const logout = async (req, res) => {
+const logout = async (req, res, next) => {
   try {
     return res
       .status(200)
@@ -65,14 +66,34 @@ const logout = async (req, res) => {
     next(error);
   }
 };
-const searchUser = async (req, res) => {
+const searchUser = async (req, res, next) => {
   try {
     // name{*<-url me chaiye "name"} Taken from Search query
-    const { name } = req.query;
-
-    return res.status(200).json({ success: true, message: name });
+    const { name = "" } = req.query;
+    const chat = await Chat.find({ groupchat: false, members: req.user });
+    const allUserFromChats = chat.flatMap((chat) => chat.members);
+    const allUserExceptMeandFriends = await User.find({
+      _id: { $nin: allUserFromChats },
+      name: { $regex: name, $options: "i" },
+    });
+    const users = allUserExceptMeandFriends.map(({ _id, name, avatar }) => ({
+      _id,
+      name,
+      avatar: avatar.url,
+    }));
+    return res.status(200).json({
+      success: true,
+      message: users,
+    });
   } catch (error) {
     next(error);
   }
 };
-export { login, newUser, getMyProfile, logout, searchUser };
+const sendrequest = async (req, res, next) => {
+  try {
+    
+  } catch (error) {
+    next(error);
+  }
+};
+export { login, newUser, getMyProfile, logout, searchUser, sendrequest };

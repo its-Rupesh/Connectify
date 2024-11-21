@@ -15,12 +15,6 @@ const newGroupChat = async (req, res, next) => {
     // We will get name,member in req object
     // Members array
     const { name, members } = req.body;
-    // members length should be greater than 2
-    if (members.length < 2) {
-      return next(
-        new ErrorHandler("Group Chat Required More than 2 Members", 400)
-      );
-    }
     // Memeber should contain req.user->our Group id
     //user is user id peforming at middleware auth
     const allMembers = [...members, req.user];
@@ -101,9 +95,6 @@ const getMyGroups = async (req, res, next) => {
 const addMembers = async (req, res, next) => {
   try {
     const { chatId, members } = req.body;
-    if (!members || members.length < 1) {
-      next(new ErrorHandler("Provide Members", 400));
-    }
     const chat = await Chat.findById(chatId);
     if (!chat) return next(new ErrorHandler("Chat Not Found", 404));
     if (!chat.groupchat)

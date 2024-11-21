@@ -5,12 +5,14 @@ import {
   newUser,
   logout,
   searchUser,
+  sendrequest,
 } from "../controllers/user.js";
 import { singleAvatar } from "../middlewares/multer.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 import {
   loginValidator,
   registerValidator,
+  sendrequestValidator,
   validateHandler,
 } from "../lib/validator.js";
 
@@ -26,4 +28,11 @@ app.post("/login", loginValidator(), validateHandler, login);
 app.get("/me", isAuthenticated, getMyProfile);
 app.get("/logout", isAuthenticated, logout);
 app.get("/searchUser", isAuthenticated, searchUser);
+app.put(
+  "/sendrequest",
+  sendrequestValidator(),
+  validateHandler,
+  isAuthenticated,
+  sendrequest
+);
 export default app;
