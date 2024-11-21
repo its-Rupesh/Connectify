@@ -63,6 +63,14 @@ const searchUserValidator = () => [
 const sendrequestValidator = () => [
   body("userId", "Please Enter UserId").notEmpty(),
 ];
+const acceptrequestValidator = () => [
+  body("requestId", "Please Enter Request Id").notEmpty(),
+  body("accept")
+    .notEmpty()
+    .withMessage("Please Add Accept")
+    .isBoolean()
+    .withMessage("Accept Must be boolean"),
+];
 export {
   registerValidator,
   loginValidator,
@@ -78,4 +86,5 @@ export {
   deleteChatHandler,
   searchUserValidator,
   sendrequestValidator,
+  acceptrequestValidator,
 };

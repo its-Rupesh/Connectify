@@ -6,6 +6,7 @@ import {
   logout,
   searchUser,
   sendrequest,
+  acceptrequest,
 } from "../controllers/user.js";
 import { singleAvatar } from "../middlewares/multer.js";
 import { isAuthenticated } from "../middlewares/auth.js";
@@ -14,6 +15,7 @@ import {
   registerValidator,
   sendrequestValidator,
   validateHandler,
+  acceptrequestValidator,
 } from "../lib/validator.js";
 
 //Express->Contain Router for Routing purpose
@@ -30,4 +32,10 @@ app.get("/me", getMyProfile);
 app.get("/logout", logout);
 app.get("/searchUser", searchUser);
 app.put("/sendrequest", sendrequestValidator(), validateHandler, sendrequest);
+app.put(
+  "/accept-request",
+  acceptrequestValidator(),
+  validateHandler,
+  acceptrequest
+);
 export default app;
