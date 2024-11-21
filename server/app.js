@@ -6,6 +6,7 @@ import { connectDB } from "./utils/features.js";
 
 import chatRouter from "./routes/chat.js";
 import userRouter from "./routes/user.js";
+import adminRouter from "./routes/admin.js";
 
 //MongoDb Connection Using env file
 dotenv.config({ path: "./.env" });
@@ -23,7 +24,7 @@ const PORT = 8000;
 // Routing
 app.use("/user", userRouter);
 app.use("/chat", chatRouter);
-
+app.use("/admin", adminRouter);
 app.get("/", (req, res) => {
   res.send("Hello Homepage");
 });
