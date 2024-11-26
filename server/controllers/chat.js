@@ -196,14 +196,17 @@ const leaveGroup = async (req, res, next) => {
 const sendAttachments = async (req, res, next) => {
   try {
     const { chatId } = req.body;
+    const files = req.files || [];
+    if (files.length < 1)
+      return next(new ErrorHandler("Please Provide Attachements", 400));
+    if (files.length > 5)
+      return next(new ErrorHandler("Files Can't be more than 5", 400));
     const [chat, me] = await Promise.all([
       Chat.findById(chatId),
       User.findById(req.user, "name"),
     ]);
     if (!chat) return next(new ErrorHandler("Chat Not found", 400));
-    const files = req.files || [];
-    if (files.length < 1)
-      return next(new ErrorHandler("Please Provide Attachements", 400));
+
     const attachements = [];
 
     const messageForDB = {

@@ -7,24 +7,28 @@ import { Request } from "../models/request.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
 import { getOtherMember } from "../lib/helper.js";
 //Create New User and Save it to Database and cookies
-const newUser = async (req, res) => {
-  const { name, username, password, bio } = req.body;
-  console.log(req.body);
+const newUser = async (req, res, next) => {
+  try {
+    const { name, username, password, bio } = req.body;
+    const file = req.file;
+    if (!file) return next(new ErrorHandler("File Not Present", 400));
+    const avatar = {
+      public_id: "asdfg",
+      url: "cvbnm",
+    };
 
-  const avatar = {
-    public_id: "asdfg",
-    url: "cvbnm",
-  };
+    const user = await User.create({
+      name,
+      username,
+      password,
+      avatar,
+      bio,
+    });
 
-  const user = await User.create({
-    name,
-    username,
-    password,
-    avatar,
-    bio,
-  });
-
-  sendToken(res, user, 201, "User Created");
+    sendToken(res, user, 201, "User Created");
+  } catch (error) {
+    next(error);
+  }
 };
 // Try Catch ckeck flow .txt file
 const login = async (req, res, next) => {

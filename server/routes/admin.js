@@ -5,6 +5,7 @@ import {
   allChats,
   allMessages,
   allUser,
+  getAdminData,
   getDashboardStats,
 } from "../controllers/admin.js";
 import { isAdminAuthenticated } from "../middlewares/auth.js";
@@ -15,7 +16,7 @@ app.post("/verify", adminLoginValidator(), validateHandler, adminLogin);
 app.get("/logout", adminLogOut);
 // Only Admin Can access
 app.use(isAdminAuthenticated);
-app.get("/");
+app.get("/", getAdminData);
 app.get("/users", allUser);
 app.get("/chats", allChats);
 app.get("/messages", allMessages);

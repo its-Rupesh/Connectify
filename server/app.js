@@ -13,7 +13,7 @@ dotenv.config({ path: "./.env" });
 const mongoURL = process.env.MONGO_URL;
 connectDB(mongoURL);
 
-export const adminKey = process.env.ADMIN_SECRET_KEY;
+const adminKey = process.env.ADMIN_SECRET_KEY;
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 const PORT = 8000;
-
+const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
 // Routing
 app.use("/user", userRouter);
 app.use("/chat", chatRouter);
@@ -35,5 +35,6 @@ app.get("/", (req, res) => {
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT} in ${envMode}`);
 });
+export { adminKey, envMode };

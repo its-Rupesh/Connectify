@@ -15,7 +15,6 @@ const registerValidator = () => [
   body("username", "Please Enter Username").notEmpty(),
   body("password", "Please Enter Password").notEmpty(),
   body("bio", "Please Enter bio").notEmpty(),
-  check("avatar", "Please Upload Avatar").notEmpty(),
 ];
 const loginValidator = () => [
   body("username", "Please Enter Username").notEmpty(),
@@ -44,14 +43,9 @@ const RemoveMemberValidator = () => [
 const leaveGroupValidator = () => [param("id", "Invalid Chat Id").isMongoId()];
 const sendAttachmentsValidator = () => [
   body("chatId", "Please Enter Chat Id").notEmpty(),
-  check("files")
-    .notEmpty()
-    .withMessage("Please Upload Attachements")
-    .isArray({ min: 1, max: 5 })
-    .withMessage("Attachement Must be 1-5"),
 ];
 const getMessagesValidator = () => [param("id", "Invalid Chat Id").notEmpty()];
-const getChatValidator = () => [param("id", "Invalid Chat Id").isMongoId()];
+const getChatValidator = () => [param("id", "Invalid Chat Id").notEmpty()];
 const renameValidator = () => [
   param("id", "Invalid Chat Id").isMongoId(),
   body("name", "Please Enter Name").notEmpty(),

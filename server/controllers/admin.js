@@ -152,6 +152,13 @@ const adminLogOut = async (req, res, next) => {
     next(error);
   }
 };
+const getAdminData = async (req, res, next) => {
+  try {
+    return res.status(200).json({ admin: true });
+  } catch (error) {
+    next(error);
+  }
+};
 export {
   allChats,
   allMessages,
@@ -159,4 +166,5 @@ export {
   getDashboardStats,
   adminLogin,
   adminLogOut,
+  getAdminData,
 };
