@@ -7,12 +7,14 @@ import {
   allUser,
   getDashboardStats,
 } from "../controllers/admin.js";
+import { isAdminAuthenticated } from "../middlewares/auth.js";
 import { adminLoginValidator, validateHandler } from "../lib/validator.js";
 const app = express.Router();
 
 app.post("/verify", adminLoginValidator(), validateHandler, adminLogin);
 app.get("/logout", adminLogOut);
 // Only Admin Can access
+app.use(isAdminAuthenticated);
 app.get("/");
 app.get("/users", allUser);
 app.get("/chats", allChats);
