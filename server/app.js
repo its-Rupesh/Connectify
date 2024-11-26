@@ -13,6 +13,8 @@ dotenv.config({ path: "./.env" });
 const mongoURL = process.env.MONGO_URL;
 connectDB(mongoURL);
 
+export const adminKey = process.env.ADMIN_SECRET_KEY;
+
 const app = express();
 
 //Middleware

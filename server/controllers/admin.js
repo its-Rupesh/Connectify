@@ -4,6 +4,7 @@ import { User } from "../models/user.js";
 import { ErrorHandler } from "../utils/utility.js";
 import jwt from "jsonwebtoken";
 import { cookieOptions } from "../utils/features.js";
+import { adminKey } from "../app.js";
 
 const allUser = async (req, res, next) => {
   try {
@@ -123,7 +124,6 @@ const getDashboardStats = async (req, res, next) => {
 const adminLogin = async (req, res, next) => {
   try {
     const { secretKey } = req.body;
-    const adminKey = process.env.ADMIN_SECRET_KEY || "Rupesh";
     const isMatch = secretKey === adminKey;
 
     if (!isMatch) return next(new ErrorHandler("Invalid Secret Key", 401));
