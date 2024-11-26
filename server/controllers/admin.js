@@ -1,7 +1,9 @@
-import { tr } from "@faker-js/faker";
 import { Chat } from "../models/chat.js";
 import { Message } from "../models/message.js";
 import { User } from "../models/user.js";
+import { ErrorHandler } from "../utils/utility.js";
+import jwt from "jsonwebtoken";
+import { cookieOptions } from "../utils/features.js";
 
 const allUser = async (req, res, next) => {
   try {
@@ -118,4 +120,43 @@ const getDashboardStats = async (req, res, next) => {
     next(error);
   }
 };
-export { allUser, allChats, allMessages, getDashboardStats };
+const adminLogin = async (req, res, next) => {
+  try {
+    const { secretKey } = req.body;
+    const adminKey = process.env.ADMIN_SECRET_KEY || "Rupesh";
+    const isMatch = secretKey === adminKey;
+
+    if (!isMatch) return next(new ErrorHandler("Invalid Secret Key", 401));
+    const token = jwt.sign(secretKey, process.env.JWT_SECRET);
+    return res
+      .status(200)
+      .cookie("Connectify-admin-Token", token, {
+        ...cookieOptions,
+        maxAge: 1000 * 60 * 30,
+      })
+      .json({ success: true, message: "Authenticated Successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+const adminLogOut = async (req, res, next) => {
+  try {
+    return res
+      .status(200)
+      .cookie("Connectify-admin-Token", "", { ...cookieOptions, maxAge: 0 })
+      .json({
+        success: true,
+        message: "Logged Out Successfully",
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+export {
+  allChats,
+  allMessages,
+  allUser,
+  getDashboardStats,
+  adminLogin,
+  adminLogOut,
+};
