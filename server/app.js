@@ -12,6 +12,8 @@ import adminRouter from "./routes/admin.js";
 import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { v4 as uuid } from "uuid";
 import { Message } from "./models/message.js";
+import cors from "cors";
+
 //MongoDb Connection Using env file
 dotenv.config({ path: "./.env" });
 const mongoURL = process.env.MONGO_URL;
@@ -26,13 +28,22 @@ const io = new Server(server, {});
 //Middleware
 app.use(express.json());
 app.use(cookieParser());
-
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:4173",
+      process.env.CLIENT_URL,
+    ],
+    credentials: true,
+  })
+);
 const PORT = 8000;
 const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
 // Routing
-app.use("/user", userRouter);
-app.use("/chat", chatRouter);
-app.use("/admin", adminRouter);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/chat", chatRouter);
+app.use("/api/v1/admin", adminRouter);
 app.get("/", (req, res) => {
   res.send("Hello Homepage");
 });

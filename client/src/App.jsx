@@ -1,7 +1,9 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectRoute from "./components/auth/ProtectRoute";
 import LayoutLoader from "./components/layout/Loaders";
+import axios from "axios";
+import { server } from "./constants/config";
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Chat = lazy(() => import("./pages/Chat"));
@@ -16,6 +18,12 @@ const ChatManagement = lazy(() => import("./pages/admin/ChatManagement"));
 let user = true;
 
 function App() {
+  useEffect(() => {
+    axios
+      .get(`${server}/api/v1/user/me`)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  }, []);
   return (
     <BrowserRouter>
       <Suspense fallback={<LayoutLoader />}>
