@@ -13,6 +13,11 @@ import React, { useState } from "react";
 import { useFileHandler, useInputValidation } from "6pp";
 import { VisuallyHidden } from "../components/styles/styledComponent";
 import { usernameValidator } from "../utils/validators";
+import axios from "axios";
+import { server } from "../constants/config";
+import { useDispatch } from "react-redux";
+import { userExist } from "../redux/reducers/auth";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [isLogin, setisLogin] = useState(true);
@@ -23,13 +28,35 @@ const Login = () => {
   const password = useInputValidation("");
 
   const avatar = useFileHandler("single");
+  const dispatch = useDispatch();
 
   const toggleLogin = () => {
     setisLogin((prev) => !prev);
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+
+    const config = {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/user/login`,
+        {
+          username: username.value,
+          password: password.value,
+        },
+        config
+      );
+      dispatch(userExist(true));
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something Went Wrong");
+    }
   };
   const handleSignUp = (e) => {
     e.preventDefault();
