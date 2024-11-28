@@ -1,12 +1,12 @@
+import axios from "axios";
 import React, { lazy, Suspense, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectRoute from "./components/auth/ProtectRoute";
 import LayoutLoader from "./components/layout/Loaders";
-import axios from "axios";
 import { server } from "./constants/config";
-import { useDispatch, useSelector } from "react-redux";
 import { userNotExist } from "./redux/reducers/auth";
-import { Toaster } from "react-hot-toast";
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
