@@ -37,6 +37,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // config me credential lene hae jaise headers and  content type json hae return
     const config = {
       withCredentials: true,
       headers: {
@@ -52,6 +53,7 @@ const Login = () => {
         },
         config
       );
+      // action dispatch userExist true karne ko
       dispatch(userExist(true));
       toast.success(data.message);
     } catch (error) {

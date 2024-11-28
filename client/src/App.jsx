@@ -20,11 +20,12 @@ const MessageManagement = lazy(() => import("./pages/admin/MessageManagement"));
 const ChatManagement = lazy(() => import("./pages/admin/ChatManagement"));
 
 function App() {
+  // Slice me se  State le liya
   const { user, loader } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   useEffect(() => {
     axios
-      .get(`${server}/api/v1/user/me`)
+      .get(`${server}/api/v1/user/me`) //api  call ki
       .then((res) => console.log(res))
       .catch((err) => dispatch(userNotExist()));
   }, [dispatch]);
