@@ -18,14 +18,19 @@ import {
 import React, { Suspense, useState, lazy } from "react";
 import { useNavigate } from "react-router-dom";
 import { orange } from "../../constants/color";
+import axios from "axios";
+import { server } from "../../constants/config";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { userNotExist } from "../../redux/reducers/auth";
 
 const SearchDialog = lazy(() => import("../specific/Search"));
 const NotificaionDialog = lazy(() => import("../specific/Notificaions"));
 const NewGroupsDialog = lazy(() => import("../specific/NewGroups"));
 
 const Header = () => {
- 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [ismobile, setIsmobile] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
   const [isNewGroup, setIsNewGroup] = useState(false);
@@ -43,8 +48,20 @@ const Header = () => {
   const openNotification = () => {
     setIsNotification((prev) => !prev);
   };
-  const LogoutHandler = () => {
-    console.log("logout");
+  const LogoutHandler = async () => {
+    try {
+      console.log("logout");
+      const { data } = await axios.get(`${server}/api/v1/user/logout`, {
+        withCredentials: true,
+      });
+      toast.success(data.message);
+      dispatch(userNotExist())
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message ||
+          "Something Went Wrong in logout Handler"
+      );
+    }
   };
   const NavigateToGroup = () => navigate("/groups");
   return (
