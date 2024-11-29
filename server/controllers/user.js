@@ -1,6 +1,11 @@
 import { compare } from "bcrypt";
 import { User } from "../models/user.js";
-import { cookieOptions, emitEvent, sendToken } from "../utils/features.js";
+import {
+  cookieOptions,
+  emitEvent,
+  sendToken,
+  uploadFilesToCloudinary,
+} from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { Chat } from "../models/chat.js";
 import { Request } from "../models/request.js";
@@ -12,11 +17,11 @@ const newUser = async (req, res, next) => {
     const { name, username, password, bio } = req.body;
     const file = req.file;
     if (!file) return next(new ErrorHandler("File Not Present", 400));
+    const result = await uploadFilesToCloudinary([file]);
     const avatar = {
-      public_id: "asdfg",
-      url: "cvbnm",
+      public_id: result[0].public_id,
+      url: result[0].url,
     };
-
     const user = await User.create({
       name,
       username,

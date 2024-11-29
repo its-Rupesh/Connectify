@@ -13,11 +13,18 @@ import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { v4 as uuid } from "uuid";
 import { Message } from "./models/message.js";
 import cors from "cors";
+import { v2 as cloudinary } from "cloudinary";
 
 //MongoDb Connection Using env file
 dotenv.config({ path: "./.env" });
 const mongoURL = process.env.MONGO_URL;
 connectDB(mongoURL);
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const adminKey = process.env.ADMIN_SECRET_KEY;
 const userSocketIDs = new Map();
