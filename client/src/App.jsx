@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectRoute from "./components/auth/ProtectRoute";
 import LayoutLoader from "./components/layout/Loaders";
 import { server } from "./constants/config";
-import { userNotExist } from "./redux/reducers/auth";
+import { userExist, userNotExist } from "./redux/reducers/auth";
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
@@ -25,8 +25,8 @@ function App() {
   const dispatch = useDispatch();
   useEffect(() => {
     axios
-      .get(`${server}/api/v1/user/me`) //api  call ki
-      .then((res) => console.log(res))
+      .get(`${server}/api/v1/user/me`, { withCredentials: true }) //api  call ki
+      .then(({ data }) => dispatch(userExist(data.user)))
       .catch((err) => dispatch(userNotExist()));
   }, [dispatch]);
   return loader ? (
