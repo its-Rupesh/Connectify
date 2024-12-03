@@ -6,13 +6,15 @@ import ChatList from "../specific/ChatList";
 import { samplechats } from "../../constants/sampleData";
 import { useParams } from "react-router-dom";
 import { Profile } from "../specific/Profile";
+import { useMyChatsQuery } from "../../redux/api/api";
 
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     // alag Chats select Karne ke liye
     const params = useParams();
     const chatId = params.chatId;
-
+    const { isError, isLoading, error, refetch, data } = useMyChatsQuery("");
+    console.log("Data", data);
     const handleDeleteChat = (e, _id, groupChat) => {
       e.preventDefault();
       console.log("Delete Chat", _id, groupChat);
