@@ -9,6 +9,9 @@ import { Profile } from "../specific/Profile";
 import { useMyChatsQuery } from "../../redux/api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setisMobile } from "../../redux/reducers/misc";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
+import { useErrors } from "../../hooks/hook";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     // alag Chats select Karne ke liye
@@ -16,9 +19,9 @@ const AppLayout = () => (WrappedComponent) => {
     const chatId = params.chatId;
     const dispatch = useDispatch();
     const { isMobile } = useSelector((state) => state.misc);
-    console.log("isMobile", isMobile);
     const { isError, isLoading, error, refetch, data } = useMyChatsQuery("");
-    //console.log("Data", data);
+
+    useErrors([{ isError, error }]);
 
     const handleMobileClose = () => {
       dispatch(setisMobile(false));
