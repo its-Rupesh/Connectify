@@ -21,9 +21,9 @@ import { orange } from "../../constants/color";
 import axios from "axios";
 import { server } from "../../constants/config";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userNotExist } from "../../redux/reducers/auth";
-import { setisMobile } from "../../redux/reducers/misc";
+import { setisMobile, setIsSearch } from "../../redux/reducers/misc";
 
 const SearchDialog = lazy(() => import("../specific/Search"));
 const NotificaionDialog = lazy(() => import("../specific/Notificaions"));
@@ -32,16 +32,15 @@ const NewGroupsDialog = lazy(() => import("../specific/NewGroups"));
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [isSearch, setIsSearch] = useState(false);
+  const { isSearch } = useSelector((state) => state.misc);
   const [isNewGroup, setIsNewGroup] = useState(false);
   const [isNotification, setIsNotification] = useState(false);
 
   const handleMobile = () => {
     dispatch(setisMobile(true));
-    console.log("Header Monile");
   };
   const openSearch = () => {
-    setIsSearch((prev) => !prev);
+    dispatch(setIsSearch(true));
   };
   const openNewGroup = () => {
     setIsNewGroup((prev) => !prev);

@@ -14,8 +14,12 @@ import { useInputValidation } from "6pp";
 import { Search as SearchIcon } from "@mui/icons-material";
 import UserItem from "../shared/UserItem";
 import { sampleUsers } from "../../constants/sampleData";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsSearch } from "../../redux/reducers/misc";
 
 const Search = () => {
+  const dispatch = useDispatch();
+  const { isSearch } = useSelector((state) => state.misc);
   const search = useInputValidation("");
 
   let isLoadingSendFriendRequest = false;
@@ -25,9 +29,11 @@ const Search = () => {
   };
 
   const [users, setusers] = useState(sampleUsers);
-
+  const searchCloseHandler = () => {
+    dispatch(setIsSearch(false));
+  };
   return (
-    <Dialog open>
+    <Dialog open={isSearch} onClose={searchCloseHandler}>
       <Stack
         p={"2rem"}
         spacing={"2rem"}
