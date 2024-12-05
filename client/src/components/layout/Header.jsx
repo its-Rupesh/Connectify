@@ -23,6 +23,7 @@ import { server } from "../../constants/config";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { userNotExist } from "../../redux/reducers/auth";
+import { setisMobile } from "../../redux/reducers/misc";
 
 const SearchDialog = lazy(() => import("../specific/Search"));
 const NotificaionDialog = lazy(() => import("../specific/Notificaions"));
@@ -31,13 +32,13 @@ const NewGroupsDialog = lazy(() => import("../specific/NewGroups"));
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [ismobile, setIsmobile] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
   const [isNewGroup, setIsNewGroup] = useState(false);
   const [isNotification, setIsNotification] = useState(false);
 
   const handleMobile = () => {
-    setIsmobile((prev) => !prev);
+    dispatch(setisMobile(true));
+    console.log("Header Monile");
   };
   const openSearch = () => {
     setIsSearch((prev) => !prev);
@@ -55,7 +56,7 @@ const Header = () => {
         withCredentials: true,
       });
       toast.success(data.message);
-      dispatch(userNotExist())
+      dispatch(userNotExist());
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||

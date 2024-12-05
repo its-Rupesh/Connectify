@@ -4,7 +4,7 @@ const initialState = {
   isNewGroup: false,
   isAddMember: false,
   isNotification: false,
-  isMobileMenuFriend: false,
+  isMobile: false,
   isSearch: false,
   isFileMenu: false,
   isDeleteMenu: false,
@@ -28,8 +28,8 @@ const miscSlice = createSlice({
     setIsNotification: (state, action) => {
       state.isNotification = action.payload;
     },
-    setIsMobileMenuFriend: (state, action) => {
-      state.isMobileMenuFriend = action.payload;
+    setisMobile: (state, action) => {
+      state.isMobile = action.payload;
     },
     setIsSearch: (state, action) => {
       state.isSearch = action.payload;
@@ -52,7 +52,7 @@ export const {
   setIsNewGroup,
   setIsAddMember,
   setIsNotification,
-  setIsMobileMenuFriend,
+  setisMobile,
   setIsSearch,
   setIsFileMenu,
   setIsDeleteMenu,
