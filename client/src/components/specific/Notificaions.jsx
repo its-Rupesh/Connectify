@@ -4,30 +4,46 @@ import {
   Dialog,
   DialogTitle,
   ListItem,
+  Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
 import React, { memo } from "react";
 import { sampleNotifications } from "../../constants/sampleData";
+import { useGetNotificationQuery } from "../../redux/api/api";
+import { useErrors } from "../../hooks/hook";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsNotification } from "../../redux/reducers/misc";
 
 const Notificaions = () => {
+  const { isNotification } = useSelector((state) => state.misc);
+  const { data, error, isLoading, isError } = useGetNotificationQuery();
+  const dispatch = useDispatch();
   const friendRequesthandler = ({ _id, accept }) => {};
-
+  const oncloseHandler = () => {
+    dispatch(setIsNotification(false));
+  };
   return (
-    <Dialog open>
+    <Dialog open={isNotification} onClose={oncloseHandler}>
       <Stack p={{ xs: "1rem", sm: "2rem" }} maxWidth={"25rem"}>
         <DialogTitle>Notifications</DialogTitle>
-        {sampleNotifications.length > 0 ? (
-          sampleNotifications.map((i) => (
-            <NotificaionsItem
-              sender={i.sender}
-              _id={i._id}
-              handler={friendRequesthandler}
-              key={i._id}
-            />
-          ))
+        {isLoading ? (
+          <Skeleton />
         ) : (
-          <Typography textAlign={"center"}>No Notification</Typography>
+          <>
+            {data?.message.length > 0 ? (
+              data?.message.map((i) => (
+                <NotificaionsItem
+                  sender={i.sender}
+                  _id={i._id}
+                  handler={friendRequesthandler}
+                  key={i._id}
+                />
+              ))
+            ) : (
+              <Typography textAlign={"center"}>No Notification</Typography>
+            )}
+          </>
         )}
       </Stack>
     </Dialog>
