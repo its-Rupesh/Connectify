@@ -20,7 +20,6 @@ const ChatList = ({
         //console.log("newmessage", newMessageAlert);
         // Members online Hae ki nahi
         const isOnline = members?.some((members) => onlineUsers.includes(_id));
-        console.log("isOnline", isOnline);
         return (
           <ChatItem
             index={index}

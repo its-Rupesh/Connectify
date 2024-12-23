@@ -16,24 +16,38 @@ import UserItem from "../shared/UserItem";
 import { sampleUsers } from "../../constants/sampleData";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsSearch } from "../../redux/reducers/misc";
-import { useLazySearchUserQuery } from "../../redux/api/api";
+import { toast } from "react-hot-toast";
+import {
+  useLazySearchUserQuery,
+  useSendFriendRequestMutation,
+} from "../../redux/api/api";
 
 const Search = () => {
   const dispatch = useDispatch();
   const { isSearch } = useSelector((state) => state.misc);
   // [Trigger Funcn ,{isLoading,iserror,error...}]
   const [searchUser, result] = useLazySearchUserQuery();
-
+  // const [sendFriendRequest] = useSendFriendRequestMutation();
+  const [sendFriendRequest] = useSendFriendRequestMutation();
   const searchCloseHandler = () => {
     dispatch(setIsSearch(false));
   };
   const search = useInputValidation("");
   let isLoadingSendFriendRequest = false;
 
-  const addFriendHandler = (id) => {
-    console.log(id);
+  const addFriendHandler = async (id) => {
+    try {
+      const res = await sendFriendRequest({ userId: id });
+      if (res.data) {
+        toast.success("Friend Request Sent");
+      } else {
+        toast.error(res?.error?.data?.message || "Something went Wrong");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went Wrong");
+    }
   };
-
   const [users, setusers] = useState([]);
 
   useEffect(() => {

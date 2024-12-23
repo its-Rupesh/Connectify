@@ -19,6 +19,8 @@ const AppLayout = () => (WrappedComponent) => {
     const chatId = params.chatId;
     const dispatch = useDispatch();
     const { isMobile } = useSelector((state) => state.misc);
+    const { user } = useSelector((state) => state.auth);
+
     const { isError, isLoading, error, refetch, data } = useMyChatsQuery("");
 
     useErrors([{ isError, error }]);
@@ -80,7 +82,7 @@ const AppLayout = () => (WrappedComponent) => {
               bgcolor: "rgba(0,0,0,0.85)",
             }}
           >
-            <Profile />
+            <Profile user={user} />
           </Grid>
         </Grid>
       </>
