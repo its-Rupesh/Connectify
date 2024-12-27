@@ -12,17 +12,19 @@ import { setisMobile } from "../../redux/reducers/misc";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useErrors } from "../../hooks/hook";
+import { getSocket } from "../../socket";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     // alag Chats select Karne ke liye
     const params = useParams();
     const chatId = params.chatId;
     const dispatch = useDispatch();
+    const socket = getSocket();
+    console.log(socket.id);
     const { isMobile } = useSelector((state) => state.misc);
     const { user } = useSelector((state) => state.auth);
 
     const { isError, isLoading, error, refetch, data } = useMyChatsQuery("");
-
     useErrors([{ isError, error }]);
 
     const handleMobileClose = () => {

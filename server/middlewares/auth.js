@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import { ErrorHandler } from "../utils/utility.js";
 import { adminKey } from "../app.js";
+import { ConnectifyToken } from "../constants/config.js";
+import { User } from "../models/user.js";
 const isAuthenticated = async (req, res, next) => {
   try {
     const Token = req.cookies["Connectify-Token"];
@@ -27,4 +29,25 @@ const isAdminAuthenticated = async (req, res, next) => {
     next(error);
   }
 };
-export { isAuthenticated, isAdminAuthenticated };
+const SocketAuthenticator = async (err, socket, next) => {
+  try {
+    if (err) return next(err);
+    const authToken = socket.request.cookies[ConnectifyToken];
+    if (!authToken)
+      return next(
+        new ErrorHandler("Please Login to Access this Route...", 401)
+      );
+    const decodedData = jwt.verify(authToken, process.env.JWT_SECRET);
+    const user = await User.findById(decodedData._id);
+    if (!user)
+      return next(
+        new ErrorHandler("Please Login to Access this Route...", 401)
+      );
+    socket.user = user;
+    return next();
+  } catch (error) {
+    console.log(error);
+    return next(new ErrorHandler("Please Login to Access this Route...", 401));
+  }
+};
+export { isAuthenticated, isAdminAuthenticated, SocketAuthenticator };

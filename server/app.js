@@ -14,6 +14,8 @@ import { v4 as uuid } from "uuid";
 import { Message } from "./models/message.js";
 import cors from "cors";
 import { v2 as cloudinary } from "cloudinary";
+import { corsOptions } from "./constants/config.js";
+import { SocketAuthenticator } from "./middlewares/auth.js";
 
 //MongoDb Connection Using env file
 dotenv.config({ path: "./.env" });
@@ -27,24 +29,16 @@ cloudinary.config({
 });
 
 const adminKey = process.env.ADMIN_SECRET_KEY;
+// Map of Sockets id
 const userSocketIDs = new Map();
 const app = express();
 //io socket creation
 const server = createServer(app);
-const io = new Server(server, {});
+const io = new Server(server, { cors: corsOptions });
 //Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:4173",
-      process.env.CLIENT_URL,
-    ],
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
 const PORT = 8000;
 const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
 // Routing
@@ -54,7 +48,13 @@ app.use("/api/v1/admin", adminRouter);
 app.get("/", (req, res) => {
   res.send("Hello Homepage");
 });
-io.use((socket, next) => {});
+io.use((socket, next) => {
+  cookieParser()(
+    socket.request,
+    socket.request.res,
+    async (err) => await SocketAuthenticator(err, socket, next)
+  );
+});
 io.on("connection", (socket) => {
   const user = {
     _id: "asdf",

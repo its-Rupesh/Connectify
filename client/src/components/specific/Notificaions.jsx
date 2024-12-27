@@ -10,16 +10,34 @@ import {
 } from "@mui/material";
 import React, { memo } from "react";
 import { sampleNotifications } from "../../constants/sampleData";
-import { useGetNotificationQuery } from "../../redux/api/api";
+import {
+  useAcceptFriendRequestMutation,
+  useGetNotificationQuery,
+} from "../../redux/api/api";
 import { useErrors } from "../../hooks/hook";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsNotification } from "../../redux/reducers/misc";
+import toast from "react-hot-toast";
 
 const Notificaions = () => {
   const { isNotification } = useSelector((state) => state.misc);
   const { data, error, isLoading, isError } = useGetNotificationQuery();
+  const [acceptRequest] = useAcceptFriendRequestMutation();
   const dispatch = useDispatch();
-  const friendRequesthandler = ({ _id, accept }) => {};
+  const friendRequesthandler = async ({ _id, accept }) => {
+    dispatch(setIsNotification(false));
+    try {
+      const res = await acceptRequest({ requestId: _id, accept });
+      if (res.data?.success) {
+        console.log("Use Socket Here");
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data?.error || "Something Went Wrong");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const oncloseHandler = () => {
     dispatch(setIsNotification(false));
   };
@@ -76,13 +94,8 @@ const NotificaionsItem = memo(({ sender, _id, handler }) => {
           {`${sender.name} Send you Friend Request`}
         </Typography>
         <Stack direction={{ xs: "column", sm: "row" }}>
-          <Button onClick={() => friendRequesthandler({ _id, accept: true })}>
-            Accept
-          </Button>
-          <Button
-            color="error"
-            onClick={() => friendRequesthandler({ _id, accept: false })}
-          >
+          <Button onClick={() => handler({ _id, accept: true })}>Accept</Button>
+          <Button color="error" onClick={() => handler({ _id, accept: false })}>
             Reject
           </Button>
         </Stack>

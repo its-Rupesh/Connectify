@@ -45,7 +45,6 @@ const getMyChat = async (req, res, next) => {
       "members",
       "name avatar"
     );
-
     // 1.Transformed Chat is Used for group,Individual Chats
     // 2.Add Avatar Component->if groupchat is present then make object of avatar slice is used if groupchat not present then user name will be shown
     // 3.Same with Name
@@ -58,7 +57,7 @@ const getMyChat = async (req, res, next) => {
         avatar: groupchat
           ? members.slice(0, 3).map((member) => member.avatar.url)
           : [otherMembers?.avatar?.url],
-        name: groupchat ? name : [otherMembers.avatar.name],
+        name: groupchat ? name : [otherMembers.name],
         members: members.reduce((accumulator, curr) => {
           if (curr._id.toString() != req.user) {
             accumulator.push(curr._id);
