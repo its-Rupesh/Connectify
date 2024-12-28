@@ -11,21 +11,30 @@ import { sampleMessage } from "../constants/sampleData";
 import MessageComponent from "../components/shared/MessageComponent";
 import { getSocket } from "../socket";
 import { NEW_MESSAGE } from "../constants/event";
-import { useChatDetailsQuery } from "../redux/api/api";
+import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { Drawer, Grid, Skeleton } from "@mui/material";
-import { useSocketEvents } from "../hooks/hook";
+import { useErrors, useSocketEvents } from "../hooks/hook";
 
 const Chat = ({ chatId, user }) => {
+  const socket = getSocket();
+
   const containerRef = useRef(null);
   const fileMenuRef = useRef(null);
 
-  const socket = getSocket();
-  const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
-
-  const members = chatDetails?.data?.chat?.members;
   const [messages, setmessage] = useState("");
+  const [page, setpage] = useState(1);
   const [Show_message, setShow_message] = useState([]);
-  console.log(Show_message);
+
+  const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
+  const oldMessagesChunk = useGetMessagesQuery({ chatId, page });
+
+  const errors = [
+    { isError: chatDetails?.isError, error: chatDetails.error },
+    { isError: oldMessagesChunk?.isError, error: oldMessagesChunk.error },
+  ];
+  console.log("oldmessage", oldMessagesChunk?.data?.messages);
+  const members = chatDetails?.data?.chat?.members;
+
   const submitHandler = (e) => {
     e.preventDefault();
     if (!messages.trim()) return;
@@ -35,12 +44,13 @@ const Chat = ({ chatId, user }) => {
   };
 
   const newMessagesHandler = useCallback((data) => {
-    // console.log(data);
     setShow_message((prev) => [...prev, data.message]);
   }, []);
+
   const eventHandler = { [NEW_MESSAGE]: newMessagesHandler };
   useSocketEvents(socket, eventHandler);
 
+  useErrors(errors);
   return chatDetails.isLoading ? (
     <Skeleton />
   ) : (
@@ -54,6 +64,10 @@ const Chat = ({ chatId, user }) => {
         height={"90%"}
         sx={{ overflowX: "hidden", overflowY: "auto" }}
       >
+        {!oldMessagesChunk.isLoading &&
+          oldMessagesChunk.data?.messages?.map((i) => (
+            <MessageComponent message={i} user={user} key={i._id} />
+          ))}
         {Show_message.map((i) => (
           <MessageComponent message={i} user={user} key={i._id} />
         ))}
