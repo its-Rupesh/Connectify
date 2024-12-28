@@ -15,12 +15,7 @@ import { useChatDetailsQuery } from "../redux/api/api";
 import { Drawer, Grid, Skeleton } from "@mui/material";
 import { useSocketEvents } from "../hooks/hook";
 
-const user = {
-  _id: "1",
-  name: "Lokesh",
-};
-
-const Chat = ({ chatId }) => {
+const Chat = ({ chatId, user }) => {
   const containerRef = useRef(null);
   const fileMenuRef = useRef(null);
 
@@ -29,7 +24,8 @@ const Chat = ({ chatId }) => {
 
   const members = chatDetails?.data?.chat?.members;
   const [messages, setmessage] = useState("");
-
+  const [Show_message, setShow_message] = useState([]);
+  console.log(Show_message);
   const submitHandler = (e) => {
     e.preventDefault();
     if (!messages.trim()) return;
@@ -39,10 +35,9 @@ const Chat = ({ chatId }) => {
   };
 
   const newMessagesHandler = useCallback((data) => {
-    console.log(data);
-    
+    // console.log(data);
+    setShow_message((prev) => [...prev, data.message]);
   }, []);
-
   const eventHandler = { [NEW_MESSAGE]: newMessagesHandler };
   useSocketEvents(socket, eventHandler);
 
@@ -59,7 +54,7 @@ const Chat = ({ chatId }) => {
         height={"90%"}
         sx={{ overflowX: "hidden", overflowY: "auto" }}
       >
-        {sampleMessage.map((i) => (
+        {Show_message.map((i) => (
           <MessageComponent message={i} user={user} key={i._id} />
         ))}
       </Stack>
