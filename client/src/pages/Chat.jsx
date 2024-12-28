@@ -3,22 +3,52 @@ import {
   Send as SendIcon,
 } from "@mui/icons-material";
 import { IconButton, Stack } from "@mui/material";
-import React, { useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import FileMenu from "../components/dialogs/FileMenu";
 import AppLayout from "../components/layout/AppLayout";
 import { InputBox } from "../components/styles/styledComponent";
 import { sampleMessage } from "../constants/sampleData";
 import MessageComponent from "../components/shared/MessageComponent";
+import { getSocket } from "../socket";
+import { NEW_MESSAGE } from "../constants/event";
+import { useChatDetailsQuery } from "../redux/api/api";
+import { Drawer, Grid, Skeleton } from "@mui/material";
+import { useSocketEvents } from "../hooks/hook";
 
 const user = {
   _id: "1",
   name: "Lokesh",
 };
 
-const Chat = () => {
+const Chat = ({ chatId }) => {
   const containerRef = useRef(null);
   const fileMenuRef = useRef(null);
-  return (
+
+  const socket = getSocket();
+  const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
+
+  const members = chatDetails?.data?.chat?.members;
+  const [messages, setmessage] = useState("");
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    if (!messages.trim()) return;
+    //Emitting Message to Server
+    socket.emit(NEW_MESSAGE, { chatId, members, messages });
+    setmessage("");
+  };
+
+  const newMessagesHandler = useCallback((data) => {
+    console.log(data);
+    
+  }, []);
+
+  const eventHandler = { [NEW_MESSAGE]: newMessagesHandler };
+  useSocketEvents(socket, eventHandler);
+
+  return chatDetails.isLoading ? (
+    <Skeleton />
+  ) : (
     <>
       <Stack
         ref={containerRef}
@@ -33,7 +63,7 @@ const Chat = () => {
           <MessageComponent message={i} user={user} key={i._id} />
         ))}
       </Stack>
-      <form style={{ height: "10%" }}>
+      <form style={{ height: "10%" }} onSubmit={submitHandler}>
         <Stack
           direction={"row"}
           height={"100%"}
@@ -47,7 +77,11 @@ const Chat = () => {
           >
             <AttachFileIcon />
           </IconButton>
-          <InputBox placeholder="Enter Your Text Here...." />
+          <InputBox
+            placeholder="Enter Your Text Here...."
+            value={messages}
+            onChange={(e) => setmessage(e.target.value)}
+          />
           <IconButton
             sx={{
               rotate: "-30deg",
@@ -57,6 +91,7 @@ const Chat = () => {
               padding: "0.5rem",
               "&:hover": { bgcolor: "error.dark" },
             }}
+            type="submit"
           >
             <SendIcon />
           </IconButton>

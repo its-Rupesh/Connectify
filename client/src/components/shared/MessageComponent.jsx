@@ -10,7 +10,6 @@ const MessageComponent = ({ message, user }) => {
   const sameSender = sender?._id === user?._id;
 
   const timeago = moment(createdAt).fromNow();
-  console.log(attachments);
   return (
     <div
       style={{
