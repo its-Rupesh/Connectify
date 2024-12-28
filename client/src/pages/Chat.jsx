@@ -14,7 +14,7 @@ import { NEW_MESSAGE } from "../constants/event";
 import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { Drawer, Grid, Skeleton } from "@mui/material";
 import { useErrors, useSocketEvents } from "../hooks/hook";
-
+import { useInfiniteScrollBottom, useInfiniteScrollTop } from "6pp";
 const Chat = ({ chatId, user }) => {
   const socket = getSocket();
 
@@ -32,8 +32,16 @@ const Chat = ({ chatId, user }) => {
     { isError: chatDetails?.isError, error: chatDetails.error },
     { isError: oldMessagesChunk?.isError, error: oldMessagesChunk.error },
   ];
-  console.log("oldmessage", oldMessagesChunk?.data?.messages);
   const members = chatDetails?.data?.chat?.members;
+
+  const { data: oldMessages, setData: setOldMessages } = useInfiniteScrollTop(
+    containerRef,
+    oldMessagesChunk?.data?.totalPages,
+    page,
+    setpage,
+    oldMessagesChunk.data?.messages
+  );
+  console.log("oldMessages", oldMessages);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -51,6 +59,7 @@ const Chat = ({ chatId, user }) => {
   useSocketEvents(socket, eventHandler);
 
   useErrors(errors);
+  const allMessages = [...oldMessages, ...Show_message];
   return chatDetails.isLoading ? (
     <Skeleton />
   ) : (
@@ -64,11 +73,7 @@ const Chat = ({ chatId, user }) => {
         height={"90%"}
         sx={{ overflowX: "hidden", overflowY: "auto" }}
       >
-        {!oldMessagesChunk.isLoading &&
-          oldMessagesChunk.data?.messages?.map((i) => (
-            <MessageComponent message={i} user={user} key={i._id} />
-          ))}
-        {Show_message.map((i) => (
+        {allMessages.map((i) => (
           <MessageComponent message={i} user={user} key={i._id} />
         ))}
       </Stack>
