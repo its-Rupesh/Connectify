@@ -195,6 +195,7 @@ const leaveGroup = async (req, res, next) => {
 const sendAttachments = async (req, res, next) => {
   try {
     const { chatId } = req.body;
+    console.log(chatId);
     const files = req.files || [];
     if (files.length < 1)
       return next(new ErrorHandler("Please Provide Attachements", 400));

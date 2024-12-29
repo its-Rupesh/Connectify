@@ -62,6 +62,22 @@ const api = createApi({
       }),
       providesTags: ["Message"],
     }),
+    sendAttachement: builder.mutation({
+      query: (data) => ({
+        url: "chat/message",
+        method: "POST",
+        credentials: "include",
+        body: data,
+      }),
+    }),
+    sendMultipleAttachements: builder.mutation({
+      query: (data) => ({
+        url: "chat/message",
+        method: "POST",
+        credentials: "include",
+        body: data,
+      }),
+    }),
   }),
 });
 export default api;
@@ -73,4 +89,6 @@ export const {
   useAcceptFriendRequestMutation,
   useChatDetailsQuery,
   useGetMessagesQuery,
+  useSendAttachementMutation,
+  useSendMultipleAttachementsMutation,
 } = api;

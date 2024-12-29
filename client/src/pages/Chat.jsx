@@ -15,15 +15,19 @@ import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { Drawer, Grid, Skeleton } from "@mui/material";
 import { useErrors, useSocketEvents } from "../hooks/hook";
 import { useInfiniteScrollBottom, useInfiniteScrollTop } from "6pp";
+import { useDispatch } from "react-redux";
+import { setIsFileMenu } from "../redux/reducers/misc";
 const Chat = ({ chatId, user }) => {
   const socket = getSocket();
-
+  console.log(chatId);
+  const dispatch = useDispatch();
   const containerRef = useRef(null);
   const fileMenuRef = useRef(null);
 
   const [messages, setmessage] = useState("");
   const [page, setpage] = useState(1);
   const [Show_message, setShow_message] = useState([]);
+  const [fileMenuanchor, setfileMenuanchor] = useState(null);
 
   const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
   const oldMessagesChunk = useGetMessagesQuery({ chatId, page });
@@ -41,7 +45,7 @@ const Chat = ({ chatId, user }) => {
     setpage,
     oldMessagesChunk.data?.messages
   );
-  console.log("oldMessages", oldMessages);
+  // console.log("oldMessages", oldMessages);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -57,6 +61,11 @@ const Chat = ({ chatId, user }) => {
 
   const eventHandler = { [NEW_MESSAGE]: newMessagesHandler };
   useSocketEvents(socket, eventHandler);
+
+  const handleFileOpen = (e) => {
+    dispatch(setIsFileMenu(true));
+    setfileMenuanchor(e.currentTarget);
+  };
 
   useErrors(errors);
   const allMessages = [...oldMessages, ...Show_message];
@@ -88,6 +97,7 @@ const Chat = ({ chatId, user }) => {
           <IconButton
             sx={{ position: "absolute", left: "1.5rem", rotate: "30deg" }}
             ref={fileMenuRef}
+            onClick={handleFileOpen}
           >
             <AttachFileIcon />
           </IconButton>
@@ -111,7 +121,7 @@ const Chat = ({ chatId, user }) => {
           </IconButton>
         </Stack>
       </form>
-      <FileMenu />
+      <FileMenu anchorEl={fileMenuanchor} chatId={chatId} />
     </>
   );
 };
