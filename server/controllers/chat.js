@@ -2,6 +2,7 @@ import {
   ALERT,
   NEW_ATTACHEMENT,
   NEW_MESSAGE_ALERT,
+  NEW_MESSAGE,
   REFETCH_CHATS,
 } from "../constants/events.js";
 import { User } from "../models/user.js";
@@ -229,7 +230,7 @@ const sendAttachments = async (req, res, next) => {
       },
     };
     const message = await Message.create(messageForDB);
-    emitEvent(req, NEW_ATTACHEMENT, chat.members, {
+    emitEvent(req, NEW_MESSAGE, chat.members, {
       message: messageForRealTime,
       chatId,
     });

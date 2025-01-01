@@ -40,6 +40,10 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 const PORT = 8000;
 const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
+
+// io instance saved for sockets
+app.set("io", io);
+
 // Routing
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/chat", chatRouter);

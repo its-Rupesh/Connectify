@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Header from "./Header";
 import Title from "../shared/Title";
 import { Drawer, Grid, Skeleton } from "@mui/material";
@@ -11,8 +11,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setisMobile } from "../../redux/reducers/misc";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { useErrors } from "../../hooks/hook";
+import { useErrors, useSocketEvents } from "../../hooks/hook";
 import { getSocket } from "../../socket";
+import {
+  NEW_MESSAGE,
+  NEW_MESSAGE_ALERT,
+  NEW_REQUEST,
+} from "../../constants/event";
+import { incrementNotification } from "../../redux/reducers/chat";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     // alag Chats select Karne ke liye
@@ -33,6 +39,15 @@ const AppLayout = () => (WrappedComponent) => {
       e.preventDefault();
       console.log("Delete Chat", _id, groupChat);
     };
+    const newMessageAlertHandler = useCallback(() => {}, []);
+    const newRequestHandler = useCallback(() => {
+      dispatch(incrementNotification());
+    }, [dispatch]);
+    const eventHandlers = {
+      [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
+      [NEW_REQUEST]: newRequestHandler,
+    };
+    useSocketEvents(socket, eventHandlers);
 
     return (
       <>

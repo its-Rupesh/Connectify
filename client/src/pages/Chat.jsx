@@ -46,6 +46,13 @@ const Chat = ({ chatId, user }) => {
   );
   // console.log("oldMessages", oldMessages);
 
+  // Unmount all Chat data when user change the chat list or to change whom to chat
+  useEffect(() => {
+    return () => {
+      setmessage(""), setpage(1), setShow_message(""), setOldMessages([]);
+    };
+  }, [chatId]);
+
   const submitHandler = (e) => {
     e.preventDefault();
     if (!messages.trim()) return;
@@ -54,9 +61,13 @@ const Chat = ({ chatId, user }) => {
     setmessage("");
   };
 
-  const newMessagesHandler = useCallback((data) => {
-    setShow_message((prev) => [...prev, data.message]);
-  }, []);
+  const newMessagesHandler = useCallback(
+    (data) => {
+      if (data.chatId !== chatId) return;
+      setShow_message((prev) => [...prev, data.message]);
+    },
+    [chatId]
+  );
 
   const eventHandler = { [NEW_MESSAGE]: newMessagesHandler };
   useSocketEvents(socket, eventHandler);
