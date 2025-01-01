@@ -21,7 +21,7 @@ const FileMenu = ({ anchorEl, chatId }) => {
   const fileRef = useRef(null);
 
   const [sendAttachement] = useSendAttachementMutation();
-  const [multipleAttachement] = useSendMultipleAttachementsMutation();
+  // const [multipleAttachement] = useSendMultipleAttachementsMutation();
   const { isFileMenu } = useSelector((state) => state.misc);
   const dispatch = useDispatch();
   const closeFilemMenu = () => dispatch(setIsFileMenu(false));
@@ -32,7 +32,6 @@ const FileMenu = ({ anchorEl, chatId }) => {
 
   const fileChangeHandler = async (e, key) => {
     const files = Array.from(e.target.files);
-    console.log(files);
     if (files.length <= 0) {
       return;
     }
@@ -41,23 +40,21 @@ const FileMenu = ({ anchorEl, chatId }) => {
     }
     dispatch(setIsuploadingLoader(true));
     const toastId = toast.loading(`Sending ${key} ...`);
-    console.log("working");
+    console.count("working");
     closeFilemMenu();
-    console.log("working2");
+    console.count("working");
 
     // Fetching Here..
     try {
-      console.log("working3");
+      console.count("working");
       const myForm = new FormData();
       myForm.append("chatId", chatId);
       console.log("Myform", myForm);
       files.forEach((file) => myForm.append("files", file));
-      console.log("working4");
-      const res1 = await multipleAttachement({ myForm });
-      console.log(res1);
+      console.count("working");
       const res = await sendAttachement(myForm);
       console.log("working5");
-      console.log(res);
+      console.log("res", res);
       if (res.data) toast.success(`${key} sent Successfully`, { id: toastId });
       else toast.error(`Failed to Send ${key}`, { id: toastId });
     } catch (error) {

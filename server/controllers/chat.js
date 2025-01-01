@@ -8,7 +8,11 @@ import { User } from "../models/user.js";
 import { Chat } from "../models/chat.js";
 import { Message } from "../models/message.js";
 import { getOtherMember } from "../lib/helper.js";
-import { deleteFilesFromCloudinary, emitEvent } from "../utils/features.js";
+import {
+  deleteFilesFromCloudinary,
+  emitEvent,
+  uploadFilesToCloudinary,
+} from "../utils/features.js";
 import { ErrorHandler } from ".././utils/utility.js";
 const newGroupChat = async (req, res, next) => {
   try {
@@ -194,9 +198,11 @@ const leaveGroup = async (req, res, next) => {
 };
 const sendAttachments = async (req, res, next) => {
   try {
+    console.log("Working");
     const { chatId } = req.body;
     console.log(chatId);
     const files = req.files || [];
+    console.log(files);
     if (files.length < 1)
       return next(new ErrorHandler("Please Provide Attachements", 400));
     if (files.length > 5)
@@ -207,7 +213,7 @@ const sendAttachments = async (req, res, next) => {
     ]);
     if (!chat) return next(new ErrorHandler("Chat Not found", 400));
 
-    const attachements = [];
+    const attachements = await uploadFilesToCloudinary(files);
 
     const messageForDB = {
       content: "",

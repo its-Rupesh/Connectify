@@ -19,7 +19,6 @@ import { useDispatch } from "react-redux";
 import { setIsFileMenu } from "../redux/reducers/misc";
 const Chat = ({ chatId, user }) => {
   const socket = getSocket();
-  console.log(chatId);
   const dispatch = useDispatch();
   const containerRef = useRef(null);
   const fileMenuRef = useRef(null);

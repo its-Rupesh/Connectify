@@ -6,7 +6,7 @@ import { fileFormat } from "../../lib/feature";
 import RenderAttachement from "./RenderAttachement";
 
 const MessageComponent = ({ message, user }) => {
-  const { sender, content, createdAt, attachments = [] } = message;
+  const { sender, content, createdAt, attachements = [] } = message;
   const sameSender = sender?._id === user?._id;
   const timeago = moment(createdAt).fromNow();
   return (
@@ -26,9 +26,8 @@ const MessageComponent = ({ message, user }) => {
         </Typography>
       )}
       {content && <Typography>{content}</Typography>}
-
-      {attachments.length > 0 &&
-        attachments.map((i, index) => {
+      {attachements.length > 0 &&
+        attachements.map((i, index) => {
           const url = i.url;
           const file = fileFormat(url);
           return (

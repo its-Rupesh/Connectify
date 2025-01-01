@@ -47,8 +47,8 @@ app.delete("/leave/:id", leaveGroupValidator(), validateHandler, leaveGroup);
 app.post(
   "/message",
   attachementsMulter,
-  sendAttachmentsValidator,
-  validateHandler,
+  //sendAttachmentsValidator,
+  //validateHandler,
   sendAttachments
 );
 app.get("/message/:id", getMessagesValidator(), validateHandler, getMessages);
