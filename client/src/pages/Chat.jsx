@@ -17,6 +17,7 @@ import { useErrors, useSocketEvents } from "../hooks/hook";
 import { useInfiniteScrollBottom, useInfiniteScrollTop } from "6pp";
 import { useDispatch } from "react-redux";
 import { setIsFileMenu } from "../redux/reducers/misc";
+import { removeNewMessageAlert } from "../redux/reducers/chat";
 const Chat = ({ chatId, user }) => {
   const socket = getSocket();
   const dispatch = useDispatch();
@@ -48,8 +49,12 @@ const Chat = ({ chatId, user }) => {
 
   // Unmount all Chat data when user change the chat list or to change whom to chat
   useEffect(() => {
+    dispatch(removeNewMessageAlert(chatId));
     return () => {
-      setmessage(""), setpage(1), setShow_message(""), setOldMessages([]);
+      setmessage("");
+      setpage(1);
+      setShow_message("");
+      setOldMessages([]);
     };
   }, [chatId]);
 

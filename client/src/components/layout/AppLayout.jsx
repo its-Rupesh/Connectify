@@ -1,24 +1,21 @@
-import React, { useCallback } from "react";
-import Header from "./Header";
-import Title from "../shared/Title";
 import { Drawer, Grid, Skeleton } from "@mui/material";
-import ChatList from "../specific/ChatList";
-import { samplechats } from "../../constants/sampleData";
-import { useParams } from "react-router-dom";
-import { Profile } from "../specific/Profile";
-import { useMyChatsQuery } from "../../redux/api/api";
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setisMobile } from "../../redux/reducers/misc";
-import { useEffect } from "react";
-import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
+import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/event";
 import { useErrors, useSocketEvents } from "../../hooks/hook";
-import { getSocket } from "../../socket";
+import { getOrSaveFromStorage } from "../../lib/feature";
+import { useMyChatsQuery } from "../../redux/api/api";
 import {
-  NEW_MESSAGE,
-  NEW_MESSAGE_ALERT,
-  NEW_REQUEST,
-} from "../../constants/event";
-import { incrementNotification } from "../../redux/reducers/chat";
+  incrementNotification,
+  setNewMessagesAlert,
+} from "../../redux/reducers/chat";
+import { setisMobile } from "../../redux/reducers/misc";
+import { getSocket } from "../../socket";
+import Title from "../shared/Title";
+import ChatList from "../specific/ChatList";
+import { Profile } from "../specific/Profile";
+import Header from "./Header";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     // alag Chats select Karne ke liye
@@ -28,8 +25,14 @@ const AppLayout = () => (WrappedComponent) => {
     const socket = getSocket();
     const { isMobile } = useSelector((state) => state.misc);
     const { user } = useSelector((state) => state.auth);
+    const { newMessageAlert } = useSelector((state) => state.chat);
     const { isError, isLoading, error, refetch, data } = useMyChatsQuery("");
+
     useErrors([{ isError, error }]);
+
+    useEffect(() => {
+      getOrSaveFromStorage({ key: NEW_MESSAGE_ALERT, value: newMessageAlert });
+    }, [newMessageAlert]);
 
     const handleMobileClose = () => {
       dispatch(setisMobile(false));
@@ -39,7 +42,13 @@ const AppLayout = () => (WrappedComponent) => {
       e.preventDefault();
       console.log("Delete Chat", _id, groupChat);
     };
-    const newMessageAlertHandler = useCallback(() => {}, []);
+    const newMessageAlertHandler = useCallback(
+      (data) => {
+        if (data.chatId === chatId) return;
+        dispatch(setNewMessagesAlert(data));
+      },
+      [chatId]
+    );
     const newRequestHandler = useCallback(() => {
       dispatch(incrementNotification());
     }, [dispatch]);
@@ -62,6 +71,7 @@ const AppLayout = () => (WrappedComponent) => {
               chats={data?.message}
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
+              newMessagesAlert={newMessageAlert}
             />
           </Drawer>
         )}
@@ -80,6 +90,7 @@ const AppLayout = () => (WrappedComponent) => {
                 chats={data?.message}
                 chatId={chatId}
                 handleDeleteChat={handleDeleteChat}
+                newMessagesAlert={newMessageAlert}
               />
             )}
           </Grid>
