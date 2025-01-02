@@ -9,7 +9,12 @@ import { createServer } from "http";
 import chatRouter from "./routes/chat.js";
 import userRouter from "./routes/user.js";
 import adminRouter from "./routes/admin.js";
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
+import {
+  NEW_MESSAGE,
+  NEW_MESSAGE_ALERT,
+  START_TYPING,
+  STOP_TYPING,
+} from "./constants/events.js";
 import { v4 as uuid } from "uuid";
 import { Message } from "./models/message.js";
 import cors from "cors";
@@ -90,6 +95,17 @@ io.on("connection", (socket) => {
     } catch (error) {
       console.log(error);
     }
+  });
+  socket.on(START_TYPING, ({ members, chatId }) => {
+    console.log("Start Typing", chatId, members);
+    const membersSocket = getSockets(members);
+    socket.to(membersSocket).emit(START_TYPING, { chatId });
+  });
+  socket.on(STOP_TYPING, ({ members, chatId }) => {
+    console.log("Stop Typing", chatId, members);
+
+    const membersSocket = getSockets(members);
+    socket.to(membersSocket).emit(STOP_TYPING, { chatId });
   });
   socket.on("disconnect", () => {
     userSocketIDs.delete(user._id.toString());
