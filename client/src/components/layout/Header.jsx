@@ -28,6 +28,7 @@ import {
   setisMobile,
   setIsNotification,
   setIsSearch,
+  setIsNewGroup,
 } from "../../redux/reducers/misc";
 import { resetNotificationCount } from "../../redux/reducers/chat";
 
@@ -38,9 +39,10 @@ const NewGroupsDialog = lazy(() => import("../specific/NewGroups"));
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isSearch, isNotification } = useSelector((state) => state.misc);
+  const { isSearch, isNotification, isNewGroup } = useSelector(
+    (state) => state.misc
+  );
   const { notificationCount } = useSelector((state) => state.chat);
-  const [isNewGroup, setIsNewGroup] = useState(false);
 
   const handleMobile = () => {
     dispatch(setisMobile(true));
@@ -49,7 +51,7 @@ const Header = () => {
     dispatch(setIsSearch(true));
   };
   const openNewGroup = () => {
-    setIsNewGroup((prev) => !prev);
+    dispatch(setIsNewGroup(true));
   };
   const openNotification = () => {
     dispatch(setIsNotification(true));

@@ -26,12 +26,18 @@ import { Link } from "../components/styles/styledComponent";
 import AvatarCard from ".././components/shared/AvatarCard";
 import { samplechats, sampleUsers } from "../constants/sampleData";
 import UserItem from "../components/shared/UserItem";
+import { useMyGroupsQuery } from "../redux/api/api";
 const ConfirmDeleteDialog = lazy(() =>
   import("../components/dialogs/ConfirmDeleteDialog")
 );
+import { useErrors } from "../hooks/hook";
+import LayoutLoader from "../components/layout/Loaders";
+
 const AddMembers = lazy(() => import("../components/dialogs/AddMembers"));
 const isAddMember = false;
 const Group = () => {
+  const myGroups = useMyGroupsQuery("");
+
   const [searchParams, setsearchParams] = useSearchParams();
   const Id = searchParams.get("group");
   const navigate = useNavigate();
@@ -53,6 +59,14 @@ const Group = () => {
     setisMobileMenuOpen((prev) => !prev);
   };
   const [confirmDeleteDialog, setconfirmDeleteDialog] = useState(false);
+
+  const errors = [
+    {
+      isError: myGroups.isError,
+      error: myGroups.error,
+    },
+  ];
+  useErrors(errors);
 
   // Updated handler for closing the dialog
   const closeconfirmDeleteHandler = () => {
@@ -182,7 +196,9 @@ const Group = () => {
     </Stack>
   );
 
-  return (
+  return myGroups.isLoading ? (
+    <LayoutLoader />
+  ) : (
     <Grid container height={"100vh"}>
       <Grid
         item

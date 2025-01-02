@@ -3,6 +3,7 @@ import {
   Button,
   Dialog,
   DialogTitle,
+  Skeleton,
   Stack,
   TextField,
   Typography,
@@ -10,11 +11,26 @@ import {
 import React, { useState } from "react";
 import { sampleUsers as users } from "../../constants/sampleData";
 import UserItem from "../shared/UserItem";
+import { useDispatch, useSelector } from "react-redux";
+import { useAvailableFriendsQuery } from "../../redux/api/api";
+import { useErrors } from "../../hooks/hook";
+import { setIsNewGroup } from "../../redux/reducers/misc";
 const NewGroups = () => {
-  const groupName = useInputValidation("");
+  const { isNewGroup } = useSelector((state) => state.misc);
+  const dispatch = useDispatch();
 
-  const [members, setMembers] = useState(users);
+  const { isError, isLoading, error, data } = useAvailableFriendsQuery();
+  const groupName = useInputValidation("");
+  console.log("useAvailableFriendsQuery", data);
+  // const [members, setMembers] = useState(users);
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const errors = [
+    {
+      isError,
+      error,
+    },
+  ];
+  useErrors(errors);
 
   // prev matlab current elemrrnt(All arrays)
   const selectMemberHandler = (id) => {
@@ -22,10 +38,14 @@ const NewGroups = () => {
       prev.includes(id) ? prev.filter((i) => i != id) : [...prev, id]
     );
   };
-  const submitHandler = () => {};
-  const closeHandler = () => {};
+  const submitHandler = () => {
+    console.log(groupName.value, selectedMembers);
+  };
+  const closeHandler = () => {
+    dispatch(setIsNewGroup(false));
+  };
   return (
-    <Dialog open onClose={closeHandler}>
+    <Dialog onClose={closeHandler} open={isNewGroup}>
       <Stack p={{ xs: "1rem", sm: "3rem" }} width={"25rem"} spacing={"2rem"}>
         <DialogTitle alignItems={"center"} variant="h4">
           New Group
@@ -37,14 +57,18 @@ const NewGroups = () => {
         />
         <Typography variant="body1">Members</Typography>
         <Stack>
-          {members.map((i) => (
-            <UserItem
-              user={i}
-              key={i._id}
-              handler={selectMemberHandler}
-              isAdded={selectedMembers.includes(i._id)}
-            />
-          ))}
+          {isLoading ? (
+            <Skeleton />
+          ) : (
+            data?.friends?.map((i) => (
+              <UserItem
+                user={i}
+                key={i._id}
+                handler={selectMemberHandler}
+                isAdded={selectedMembers.includes(i._id)}
+              />
+            ))
+          )}
         </Stack>
         <Stack direction={"row"} justifyContent="space-evenly">
           <Button variant="text" color="error" size={"large"}>

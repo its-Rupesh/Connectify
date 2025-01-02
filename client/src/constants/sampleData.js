@@ -1,13 +1,17 @@
 export const samplechats = [
   {
-    avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+    avatar: [
+      "https://res.cloudinary.com/dgt5opbv9/image/upload/v1734935067/13059bb8-4f06-4394-add8-e5213ee967d3.jpg",
+    ],
     name: "John Doe",
     _id: "1",
     groupChat: "false",
     members: ["1", "2"],
   },
   {
-    avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+    avatar: [
+      "https://res.cloudinary.com/dgt5opbv9/image/upload/v1734935067/13059bb8-4f06-4394-add8-e5213ee967d3.jpg",
+    ],
     name: "Jane Doe",
     _id: "2",
     groupChat: "false",
@@ -16,12 +20,16 @@ export const samplechats = [
 ];
 export const sampleUsers = [
   {
-    avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+    avatar: [
+      "https://res.cloudinary.com/dgt5opbv9/image/upload/v1734935067/13059bb8-4f06-4394-add8-e5213ee967d3.jpg",
+    ],
     name: "John Doe",
     _id: "1",
   },
   {
-    avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+    avatar: [
+      "https://res.cloudinary.com/dgt5opbv9/image/upload/v1734935067/13059bb8-4f06-4394-add8-e5213ee967d3.jpg",
+    ],
     name: "Jane Doe",
     _id: "2",
   },

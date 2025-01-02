@@ -10,7 +10,6 @@ const UserItem = ({
   styling = {},
 }) => {
   const { name, _id, avatar } = user;
-  //console.log("user", user);
 
   return (
     <ListItem>
