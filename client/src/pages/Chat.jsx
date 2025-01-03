@@ -25,6 +25,7 @@ import { setIsFileMenu } from "../redux/reducers/misc";
 import { removeNewMessageAlert } from "../redux/reducers/chat";
 import { use } from "react";
 import TypingMessageLoader from "../components/layout/TypingMessage";
+
 const Chat = ({ chatId, user }) => {
   const socket = getSocket();
   const dispatch = useDispatch();
@@ -130,7 +131,7 @@ const Chat = ({ chatId, user }) => {
         chat: chatId,
         createdAt: new Date().toISOString(),
       };
-      setmessage((prev) => [...prev, messageForAlert]);
+      setShow_message((prev) => [...prev, messageForAlert]);
     },
     [chatId]
   );

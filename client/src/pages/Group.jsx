@@ -37,6 +37,7 @@ const AddMembers = lazy(() => import("../components/dialogs/AddMembers"));
 const isAddMember = false;
 const Group = () => {
   const myGroups = useMyGroupsQuery("");
+  console.log(myGroups.data);
 
   const [searchParams, setsearchParams] = useSearchParams();
   const Id = searchParams.get("group");
@@ -55,6 +56,7 @@ const Group = () => {
   };
   const [groupName, setgroupName] = useState("");
   const [groupNameUpdatedValue, setgroupNameUpdatedValue] = useState("");
+
   const handleMobile = () => {
     setisMobileMenuOpen((prev) => !prev);
   };
@@ -207,7 +209,7 @@ const Group = () => {
         }}
         sm={4}
       >
-        <GroupList myGroups={samplechats} chatId={Id} />
+        <GroupList myGroups={myGroups?.data?.message} chatId={Id} />
       </Grid>
       <Grid
         item
@@ -275,7 +277,7 @@ const Group = () => {
         open={isMobileMenuOpen}
         onClose={handleMobileClose}
       >
-        <GroupList w={"50vw"} myGroups={samplechats} chatId={Id} />
+        <GroupList w={"50vw"} myGroups={myGroups?.data?.message} chatId={Id} />
       </Drawer>
     </Grid>
   );

@@ -26,6 +26,7 @@ const AppLayout = () => (WrappedComponent) => {
     const { isMobile } = useSelector((state) => state.misc);
     const { user } = useSelector((state) => state.auth);
     const { newMessageAlert } = useSelector((state) => state.chat);
+    
     const { isError, isLoading, error, refetch, data } = useMyChatsQuery("");
 
     useErrors([{ isError, error }]);
