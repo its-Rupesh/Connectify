@@ -35,7 +35,7 @@ const NewGroups = () => {
       error,
     },
   ];
-  useErrors(errors);
+  useErrors([errors]);
 
   // prev matlab current elemrrnt(All arrays)
   const selectMemberHandler = (id) => {

@@ -87,8 +87,9 @@ const searchUser = async (req, res, next) => {
     // In simple terms, it filters out all the users that are already in allUserFromChats
     //This uses a regular expression ($regex) to match names in a case-insensitive manner ($options: "i").
     //It ensures only users whose names partially match the name variable are included in the results.
+    const execlusionList = [...allUserFromChats, req.user];
     const allUserExceptMeandFriends = await User.find({
-      _id: { $nin: allUserFromChats },
+      _id: { $nin: execlusionList },
       name: { $regex: name, $options: "i" },
     });
     const users = allUserExceptMeandFriends.map(({ _id, name, avatar }) => ({
@@ -203,7 +204,7 @@ const getfriends = async (req, res, next) => {
     if (chatId) {
       const chat = await Chat.findById(chatId);
       const availableFriends = friends.filter(
-        (friend) => !chat.members.include(friend._id)
+        (friend) => !chat.members.includes(friend._id)
       );
       return res
         .status(200)
@@ -212,6 +213,7 @@ const getfriends = async (req, res, next) => {
       return res.status(200).json({ success: true, friends: friends });
     }
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };

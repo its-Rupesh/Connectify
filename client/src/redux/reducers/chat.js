@@ -7,12 +7,7 @@ const initialState = {
   newMessageAlert: getOrSaveFromStorage({
     key: NEW_MESSAGE_ALERT,
     get: true,
-  }) || [
-    {
-      chatId: "",
-      count: 0,
-    },
-  ],
+  }) || [{ chatId: "", count: 0 }],
 };
 
 const chatSlice = createSlice({

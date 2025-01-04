@@ -43,6 +43,7 @@ const Header = () => {
     (state) => state.misc
   );
   const { notificationCount } = useSelector((state) => state.chat);
+  console.log(notificationCount);
 
   const handleMobile = () => {
     dispatch(setisMobile(true));

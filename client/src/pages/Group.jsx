@@ -28,8 +28,10 @@ import AvatarCard from ".././components/shared/AvatarCard";
 import { samplechats, sampleUsers } from "../constants/sampleData";
 import UserItem from "../components/shared/UserItem";
 import {
+  useAddGroupMemberMutation,
   useChatDetailsQuery,
   useMyGroupsQuery,
+  useRemoveGroupMemberMutation,
   useRenameGroupMutation,
 } from "../redux/api/api";
 const ConfirmDeleteDialog = lazy(() =>
@@ -39,10 +41,14 @@ import { useErrors } from "../hooks/hook";
 import LayoutLoader from "../components/layout/Loaders";
 import { use } from "react";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsAddMember } from "../redux/reducers/misc";
 
 const AddMembers = lazy(() => import("../components/dialogs/AddMembers"));
-const isAddMember = false;
 const Group = () => {
+  const dispatch = useDispatch();
+  const { isAddMember } = useSelector((state) => state.misc);
+
   const [searchParams, setsearchParams] = useSearchParams();
   const chatId = searchParams.get("group");
 
@@ -55,14 +61,15 @@ const Group = () => {
     renameGroup,
     { isLoading: renameLoading, isError: renameisError, data },
   ] = useRenameGroupMutation();
-  console.log(groupDetails.data);
+  const [
+    removeMember,
+    { isError: removeMemberisError, isLoading: removeMemberisLoading },
+  ] = useRemoveGroupMemberMutation();
 
   const navigate = useNavigate();
 
   const [isMobileMenuOpen, setisMobileMenuOpen] = useState(false);
-  const handleMobileClose = () => {
-    setisMobileMenuOpen(false);
-  };
+
   const [isEdit, setisEdit] = useState(false);
 
   const [groupName, setgroupName] = useState("");
@@ -85,6 +92,9 @@ const Group = () => {
   const navigateBack = () => {
     navigate("/");
   };
+  const handleMobileClose = () => {
+    setisMobileMenuOpen(false);
+  };
   const handleMobile = () => {
     setisMobileMenuOpen((prev) => !prev);
   };
@@ -93,7 +103,7 @@ const Group = () => {
     try {
       const res = await renameGroup({ chatId, name: groupNameUpdatedValue });
       if (res.data) {
-        setgroupName(groupNameUpdatedValue);
+        // setgroupName(groupNameUpdatedValue);
         toast.success(res?.data?.message);
       } else {
         toast.error(res?.error?.data?.message || "Something went Wrong");
@@ -104,6 +114,26 @@ const Group = () => {
     }
     console.log(groupNameUpdatedValue);
   };
+  const openAddMemberHandler = () => {
+    dispatch(setIsAddMember(true));
+    console.log("Add Groups ");
+  };
+  const removeMemberHandler = async (userId) => {
+    try {
+      const res = await removeMember({ chatId, userId });
+      if (res.data) {
+        // setgroupName(groupNameUpdatedValue);
+        toast.success(res?.data?.message);
+      } else {
+        toast.error(
+          res?.error?.data?.message || "Something went Wrong with Server"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went Wrong");
+    }
+  };
   // Updated handler for closing the dialog
   const closeconfirmDeleteHandler = () => {
     setconfirmDeleteDialog(false);
@@ -113,17 +143,9 @@ const Group = () => {
     setconfirmDeleteDialog(true);
     console.log("Delete Groups");
   };
-  const openAddMemberHandler = () => {
-    console.log("Add Groups");
-  };
-
   const deleteHandler = () => {
     console.log("delete Handler");
     closeconfirmDeleteHandler();
-  };
-
-  const removeMemberHandler = (_id) => {
-    console.log("Remove Handler", _id);
   };
 
   useEffect(() => {
@@ -297,6 +319,7 @@ const Group = () => {
                     borderRadius: "1rem",
                   }}
                   handler={removeMemberHandler}
+                  handlerIsLoading={removeMemberisLoading}
                 />
               ))}
             </Stack>
@@ -306,7 +329,7 @@ const Group = () => {
       </Grid>
       {isAddMember && (
         <Suspense fallback={<Backdrop open />}>
-          <AddMembers />
+          <AddMembers chatId={chatId} />
         </Suspense>
       )}
       {confirmDeleteDialog && (

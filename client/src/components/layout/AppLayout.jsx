@@ -2,7 +2,11 @@ import { Drawer, Grid, Skeleton } from "@mui/material";
 import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/event";
+import {
+  NEW_MESSAGE_ALERT,
+  NEW_REQUEST,
+  REFETCH_CHATS,
+} from "../../constants/event";
 import { useErrors, useSocketEvents } from "../../hooks/hook";
 import { getOrSaveFromStorage } from "../../lib/feature";
 import { useMyChatsQuery } from "../../redux/api/api";
@@ -22,11 +26,13 @@ const AppLayout = () => (WrappedComponent) => {
     const params = useParams();
     const chatId = params.chatId;
     const dispatch = useDispatch();
+
     const socket = getSocket();
+
     const { isMobile } = useSelector((state) => state.misc);
     const { user } = useSelector((state) => state.auth);
     const { newMessageAlert } = useSelector((state) => state.chat);
-    
+
     const { isError, isLoading, error, refetch, data } = useMyChatsQuery("");
 
     useErrors([{ isError, error }]);
@@ -43,19 +49,26 @@ const AppLayout = () => (WrappedComponent) => {
       e.preventDefault();
       console.log("Delete Chat", _id, groupChat);
     };
-    const newMessageAlertHandler = useCallback(
+    const newMessageAlertListner = useCallback(
       (data) => {
         if (data.chatId === chatId) return;
         dispatch(setNewMessagesAlert(data));
       },
       [chatId]
     );
-    const newRequestHandler = useCallback(() => {
+    const newRequestListner = useCallback(() => {
       dispatch(incrementNotification());
     }, [dispatch]);
+
+    const refetchListner = useCallback(() => {
+      // dispatch(incrementNotification());
+      refetch();
+    }, [refetch]);
+
     const eventHandlers = {
-      [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
-      [NEW_REQUEST]: newRequestHandler,
+      [NEW_MESSAGE_ALERT]: newMessageAlertListner,
+      [NEW_REQUEST]: newRequestListner,
+      [REFETCH_CHATS]: refetchListner,
     };
     useSocketEvents(socket, eventHandlers);
 
