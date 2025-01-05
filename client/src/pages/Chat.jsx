@@ -25,10 +25,13 @@ import { setIsFileMenu } from "../redux/reducers/misc";
 import { removeNewMessageAlert } from "../redux/reducers/chat";
 import { use } from "react";
 import TypingMessageLoader from "../components/layout/TypingMessage";
+import { useNavigate } from "react-router-dom";
 
 const Chat = ({ chatId, user }) => {
   const socket = getSocket();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const containerRef = useRef(null);
   const fileMenuRef = useRef(null);
   const bottomRef = useRef(null);
@@ -74,6 +77,12 @@ const Chat = ({ chatId, user }) => {
     if (bottomRef.current)
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
   }, [Show_message]);
+
+  useEffect(() => {
+    if (!chatDetails?.data?.chat) {
+      return navigate("/");
+    }
+  }, [chatDetails.data]);
 
   // For user to show another user is writing
   const messageOnChangeHandler = (e) => {

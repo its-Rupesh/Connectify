@@ -20,6 +20,8 @@ import {
   Typography,
   Backdrop,
   popoverClasses,
+  Skeleton,
+  CircularProgress,
 } from "@mui/material";
 import { bgGradient, matBlack } from "../constants/color";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -30,6 +32,7 @@ import UserItem from "../components/shared/UserItem";
 import {
   useAddGroupMemberMutation,
   useChatDetailsQuery,
+  useDeleteGroupMutation,
   useMyGroupsQuery,
   useRemoveGroupMemberMutation,
   useRenameGroupMutation,
@@ -57,6 +60,7 @@ const Group = () => {
     { chatId, populate: true },
     { skip: !chatId }
   );
+  console.log(groupDetails);
   const [
     renameGroup,
     { isLoading: renameLoading, isError: renameisError, data },
@@ -65,6 +69,8 @@ const Group = () => {
     removeMember,
     { isError: removeMemberisError, isLoading: removeMemberisLoading },
   ] = useRemoveGroupMemberMutation();
+  const [deleteGroup, { isLoading: deleteGroupisLoading }] =
+    useDeleteGroupMutation();
 
   const navigate = useNavigate();
 
@@ -119,8 +125,10 @@ const Group = () => {
     console.log("Add Groups ");
   };
   const removeMemberHandler = async (userId) => {
+    console.log(userId);
     try {
       const res = await removeMember({ chatId, userId });
+      console.log(res);
       if (res.data) {
         // setgroupName(groupNameUpdatedValue);
         toast.success(res?.data?.message);
@@ -141,11 +149,28 @@ const Group = () => {
 
   const confirmDeleteHandler = () => {
     setconfirmDeleteDialog(true);
-    console.log("Delete Groups");
   };
-  const deleteHandler = () => {
-    console.log("delete Handler");
-    closeconfirmDeleteHandler();
+  const deleteHandler = async () => {
+    console.log("Deleting ");
+    try {
+      const res = await deleteGroup(chatId);
+      console.log(res);
+      if (res.data) {
+        toast.success(res?.data?.message);
+        setgroupName("");
+        setgroupNameUpdatedValue("");
+        setMembers([]);
+        closeconfirmDeleteHandler();
+        navigate("/groups"); // Navigate to groups list
+      } else {
+        toast.error(
+          res?.error?.data?.message || "Something went Wrong with Server"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went Wrong");
+    }
   };
 
   useEffect(() => {
@@ -255,7 +280,7 @@ const Group = () => {
         startIcon={<DeleteIcon />}
         onClick={confirmDeleteHandler}
       >
-        Delete Members
+        Delete Group
       </Button>
       <Button
         size="large"
@@ -308,20 +333,24 @@ const Group = () => {
               overflow={"auto"}
             >
               {/*Members*/}
-              {members.map((i) => (
-                <UserItem
-                  user={i}
-                  isAdded
-                  key={i._id}
-                  styling={{
-                    boxShadow: "0 0 0.5rem rgba(0,0,0,0.2)",
-                    padding: "1rem 2rem",
-                    borderRadius: "1rem",
-                  }}
-                  handler={removeMemberHandler}
-                  handlerIsLoading={removeMemberisLoading}
-                />
-              ))}
+              {deleteGroupisLoading ? (
+                <CircularProgress />
+              ) : (
+                members.map((i) => (
+                  <UserItem
+                    user={i}
+                    isAdded
+                    key={i._id}
+                    styling={{
+                      boxShadow: "0 0 0.5rem rgba(0,0,0,0.2)",
+                      padding: "1rem 2rem",
+                      borderRadius: "1rem",
+                    }}
+                    handler={removeMemberHandler}
+                    handlerIsLoading={removeMemberisLoading}
+                  />
+                ))
+              )}
             </Stack>
             {ButtonGroup}
           </>

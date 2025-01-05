@@ -151,6 +151,7 @@ const removeMembers = async (req, res, next) => {
     if (chat.members.length <= 3) {
       return next(new ErrorHandler("Chat Must Contain 3 Members", 400));
     }
+    const allChatMembers = chat.members.map((i) => i.toString());
     chat.members = chat.members.filter(
       (member) => member.toString() !== userId.toString()
     );
@@ -161,11 +162,12 @@ const removeMembers = async (req, res, next) => {
       chat.members,
       `${userThatWillBeRemoved} has been Removed from the group`
     );
-    emitEvent(req, REFETCH_CHATS, chat.members);
+    emitEvent(req, REFETCH_CHATS, allChatMembers);
     return res
       .status(200)
       .json({ sucess: true, message: "Member Successfully Removed" });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -326,6 +328,12 @@ const getMessages = async (req, res, next) => {
   try {
     const chatId = req.params.id;
     const { page = 1 } = req.query;
+    const chat = await Chat.findById(chatId);
+    if (!chat) return next(new ErrorHandler("Chat Not Found", 404));
+    if (!chat.members.includes(req.user.toString()))
+      return next(
+        new ErrorHandler("You are not Allowed to access this Chat", 403)
+      );
     const result_per_page = 20;
     const skip = (page - 1) * result_per_page;
     const [messages, totalMessageCount] = await Promise.all([
