@@ -156,12 +156,10 @@ const removeMembers = async (req, res, next) => {
       (member) => member.toString() !== userId.toString()
     );
     await chat.save();
-    emitEvent(
-      req,
-      ALERT,
-      chat.members,
-      `${userThatWillBeRemoved} has been Removed from the group`
-    );
+    emitEvent(req, ALERT, chat.members, {
+      message: `${userThatWillBeRemoved} has been Removed from the group`,
+      chatId,
+    });
     emitEvent(req, REFETCH_CHATS, allChatMembers);
     return res
       .status(200)
@@ -191,10 +189,14 @@ const leaveGroup = async (req, res, next) => {
       User.findById(req.user, "name"),
       chat.save(),
     ]);
-    emitEvent(req, ALERT, chat.members, `User ${user.name} has left the Group`);
-    return res
-      .status(200)
-      .json({ success: true, message: "User left the Group" });
+    emitEvent(req, ALERT, chat.members, {
+      message: `User ${user.name} has left the Group`,
+      chatId,
+    });
+    return res.status(200).json({
+      success: true,
+      message: "You have successfully left the group.",
+    });
   } catch (error) {
     next(error);
   }

@@ -54,7 +54,7 @@ const Login = () => {
         config
       );
       // action dispatch userExist true karne ko
-      dispatch(userExist(true));
+      dispatch(userExist(data.user));
       toast.success(data.message);
     } catch (error) {
       toast.error(error?.response?.data?.message || "Something Went Wrong");
@@ -80,7 +80,7 @@ const Login = () => {
         formData,
         config
       );
-      dispatch(userExist(true));
+      dispatch(userExist(data.user));
       toast.success(data.message);
     } catch (error) {
       toast.error(error?.response?.data?.message || "Something Went Wrong");

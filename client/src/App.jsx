@@ -28,43 +28,48 @@ function App() {
       .get(`${server}/api/v1/user/me`, { withCredentials: true }) //api  call ki
       .then(({ data }) => dispatch(userExist(data.user)))
       .catch((err) => dispatch(userNotExist()));
-  }, [dispatch]);
+  }, [dispatch, user]);
+  const preventRightClick = (e) => {
+    e.preventDefault();
+  };
   return loader ? (
     <LayoutLoader />
   ) : (
-    <BrowserRouter>
-      <Suspense fallback={<LayoutLoader />}>
-        <Routes>
-          <Route
-            element={
-              <SocketProvider>
-                <ProtectRoute user={user} />
-              </SocketProvider>
-            }
-          >
-            <Route path="/" element={<Home />} />
-            <Route path="/chat/:chatId" element={<Chat />} />
-            <Route path="/groups" element={<Groups />} />
-          </Route>
-          <Route
-            path="/login"
-            element={
-              <ProtectRoute user={!user} redirect="/">
-                <Login />
-              </ProtectRoute>
-            }
-          />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<Dashboard />} />
-          <Route path="/admin/users" element={<UserManagement />} />
-          <Route path="/admin/chats" element={<ChatManagement />} />
-          <Route path="/admin/messages" element={<MessageManagement />} />
+    <div onContextMenu={preventRightClick}>
+      <BrowserRouter>
+        <Suspense fallback={<LayoutLoader />}>
+          <Routes>
+            <Route
+              element={
+                <SocketProvider>
+                  <ProtectRoute user={user} />
+                </SocketProvider>
+              }
+            >
+              <Route path="/" element={<Home />} />
+              <Route path="/chat/:chatId" element={<Chat />} />
+              <Route path="/groups" element={<Groups />} />
+            </Route>
+            <Route
+              path="/login"
+              element={
+                <ProtectRoute user={!user} redirect="/">
+                  <Login />
+                </ProtectRoute>
+              }
+            />
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/admin/users" element={<UserManagement />} />
+            <Route path="/admin/chats" element={<ChatManagement />} />
+            <Route path="/admin/messages" element={<MessageManagement />} />
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
-      <Toaster position="bottom-center" />
-    </BrowserRouter>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+        <Toaster position="bottom-center" />
+      </BrowserRouter>
+    </div>
   );
 }
 

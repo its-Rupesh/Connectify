@@ -1,34 +1,32 @@
+import { useInfiniteScrollTop } from "6pp";
 import {
   AttachFile as AttachFileIcon,
   Send as SendIcon,
 } from "@mui/icons-material";
-import { IconButton, Stack } from "@mui/material";
+import { IconButton, Skeleton, Stack } from "@mui/material";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import FileMenu from "../components/dialogs/FileMenu";
 import AppLayout from "../components/layout/AppLayout";
-import { InputBox } from "../components/styles/styledComponent";
-import { sampleMessage } from "../constants/sampleData";
+import TypingMessageLoader from "../components/layout/TypingMessage";
 import MessageComponent from "../components/shared/MessageComponent";
-import { getSocket } from "../socket";
+import { InputBox } from "../components/styles/styledComponent";
 import {
   ALERT,
   NEW_MESSAGE,
   START_TYPING,
   STOP_TYPING,
 } from "../constants/event";
-import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
-import { Drawer, Grid, Skeleton } from "@mui/material";
 import { useErrors, useSocketEvents } from "../hooks/hook";
-import { useInfiniteScrollBottom, useInfiniteScrollTop } from "6pp";
-import { useDispatch } from "react-redux";
-import { setIsFileMenu } from "../redux/reducers/misc";
+import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { removeNewMessageAlert } from "../redux/reducers/chat";
-import { use } from "react";
-import TypingMessageLoader from "../components/layout/TypingMessage";
-import { useNavigate } from "react-router-dom";
+import { setIsFileMenu } from "../redux/reducers/misc";
+import { getSocket } from "../socket";
 
 const Chat = ({ chatId, user }) => {
   const socket = getSocket();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -79,10 +77,10 @@ const Chat = ({ chatId, user }) => {
   }, [Show_message]);
 
   useEffect(() => {
-    if (!chatDetails?.data?.chat) {
+    if (chatDetails.isError) {
       return navigate("/");
     }
-  }, [chatDetails.data]);
+  }, [chatDetails.isError]);
 
   // For user to show another user is writing
   const messageOnChangeHandler = (e) => {
@@ -130,9 +128,10 @@ const Chat = ({ chatId, user }) => {
     [chatId]
   );
   const alertListener = useCallback(
-    (content) => {
+    (data) => {
+      if (data.chatId != chatId) return;
       const messageForAlert = {
-        content,
+        content: data.message,
         sender: {
           _id: "1",
           name: "Admin",

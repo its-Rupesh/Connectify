@@ -1,5 +1,5 @@
 import { Drawer, Grid, Skeleton } from "@mui/material";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -14,17 +14,24 @@ import {
   incrementNotification,
   setNewMessagesAlert,
 } from "../../redux/reducers/chat";
-import { setisMobile } from "../../redux/reducers/misc";
+import {
+  setIsDeleteMenu,
+  setisMobile,
+  setSelectDeleteChat,
+} from "../../redux/reducers/misc";
 import { getSocket } from "../../socket";
 import Title from "../shared/Title";
 import ChatList from "../specific/ChatList";
 import { Profile } from "../specific/Profile";
 import Header from "./Header";
+import DeleteChatMenu from "../dialogs/DeleteChatMenu";
+
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     // alag Chats select Karne ke liye
     const params = useParams();
     const chatId = params.chatId;
+    const deleteMenuAnchor = useRef(null);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -36,6 +43,7 @@ const AppLayout = () => (WrappedComponent) => {
     const { newMessageAlert } = useSelector((state) => state.chat);
 
     const { isError, isLoading, error, refetch, data } = useMyChatsQuery("");
+    console.log(data);
 
     useErrors([{ isError, error }]);
 
@@ -47,9 +55,11 @@ const AppLayout = () => (WrappedComponent) => {
       dispatch(setisMobile(false));
     };
 
-    const handleDeleteChat = (e, _id, groupChat) => {
-      e.preventDefault();
-      console.log("Delete Chat", _id, groupChat);
+    const handleDeleteChat = (e, chatId, groupchat) => {
+      dispatch(setIsDeleteMenu(true));
+      dispatch(setSelectDeleteChat({ chatId, groupchat }));
+      deleteMenuAnchor.current = e.currentTarget;
+      console.log("Delete Chat", chatId, groupchat);
     };
     const newMessageAlertListner = useCallback(
       (data) => {
@@ -79,6 +89,10 @@ const AppLayout = () => (WrappedComponent) => {
       <>
         <Title />
         <Header />
+        <DeleteChatMenu
+          dispatch={dispatch}
+          deleteMenuAnchor={deleteMenuAnchor}
+        />
         {isLoading ? (
           <Skeleton />
         ) : (

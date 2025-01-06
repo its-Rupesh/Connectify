@@ -2,12 +2,12 @@ import React, { memo } from "react";
 import { Link } from "../styles/styledComponent";
 import { Box, Stack, Typography } from "@mui/material";
 import AvatarCard from "./AvatarCard";
-
+import { motion } from "framer-motion";
 const ChatItem = ({
   avatar = [],
   name,
   _id,
-  groupChat = false,
+  groupchat = false,
   sameSender,
   isOnline,
   newMessageAlert,
@@ -18,9 +18,12 @@ const ChatItem = ({
     <Link
       sx={{ padding: "0" }}
       to={`/chat/${_id}`}
-      onContextMenu={(e) => handleDeleteChat(e, _id, groupChat)}
+      onContextMenu={(e) => handleDeleteChat(e, _id, groupchat)}
     >
-      <div
+      <motion.div
+        initial={{ opacity: 0, targetY: "-100%" }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.1 }}
         style={{
           display: "flex",
           gap: "1rem",
@@ -30,7 +33,7 @@ const ChatItem = ({
           color: sameSender ? "white" : "unset",
           position: "relative",
         }}
-        >
+      >
         <AvatarCard avatar={avatar} />
         <Stack>
           <Typography>{name}</Typography>
@@ -52,7 +55,7 @@ const ChatItem = ({
             }}
           />
         )}
-      </div>
+      </motion.div>
     </Link>
   );
 };
