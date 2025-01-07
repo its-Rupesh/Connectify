@@ -134,7 +134,7 @@ const adminLogin = async (req, res, next) => {
         ...cookieOptions,
         maxAge: 1000 * 60 * 30,
       })
-      .json({ success: true, message: "Authenticated Successfully" });
+      .json({ success: true, message: "Welcome Admin..." });
   } catch (error) {
     next(error);
   }

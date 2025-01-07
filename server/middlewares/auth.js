@@ -23,7 +23,6 @@ const isAdminAuthenticated = async (req, res, next) => {
     const secretKey = jwt.verify(Token, process.env.JWT_SECRET);
     const isMatch = secretKey === adminKey;
     if (!isMatch) return next(new ErrorHandler("Invalid Secret Key", 401));
-
     next();
   } catch (error) {
     next(error);

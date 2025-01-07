@@ -1,16 +1,56 @@
-import React from "react";
 import { useInputValidation } from "6pp";
-import { Navigate } from "react-router-dom";
 import { Button, Container, Paper, TextField, Typography } from "@mui/material";
-
+import axios from "axios";
+import React from "react";
+import { toast } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
+import { server } from "../../constants/config";
+import { AdminExist } from "../../redux/reducers/auth";
+import { useGetAdminQuery } from "../../redux/api/api";
+import { useEffect } from "react";
 const AdminLogin = () => {
-  const submitHandler = (e) => {
-    e.preventDefault();
-    console.log("Submit");
-  };
+  const dispatch = useDispatch();
+  const { data } = useGetAdminQuery();
+  console.log(data);
+
+  useEffect(() => {
+    if (data && data.admin !== undefined) {
+      dispatch(AdminExist()); // Update Redux state
+    }
+  }, [data, dispatch]);
+
   const secretKey = useInputValidation("");
-  const isAdmin = true;
-  if (isAdmin) return <Navigate to={"/admin/dashboard"} />;
+
+  const { isAdmin } = useSelector((state) => state.auth);
+  if (isAdmin == true) return <Navigate to={"/admin/dashboard"} />;
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    console.log(secretKey.value);
+    const config = {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/admin/verify`,
+        {
+          secretKey: secretKey.value,
+        },
+        config
+      );
+      console.log(data);
+      dispatch(AdminExist());
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Something Went Wrong in Server"
+      );
+    }
+  };
   return (
     <div
       style={{

@@ -148,6 +148,19 @@ const api = createApi({
       }),
       invalidatesTags: ["Chat"],
     }),
+    getAdmin: builder.query({
+      query: () => ({
+        url: "admin/",
+        credentials: "include",
+      }),
+    }),
+    adminLogout: builder.mutation({
+      query: () => ({
+        url: "admin/logout",
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
   }),
 });
 export default api;
@@ -169,4 +182,6 @@ export const {
   useAddGroupMemberMutation,
   useDeleteGroupMutation,
   useLeaveGroupMutation,
+  useGetAdminQuery,
+  useAdminLogoutMutation,
 } = api;

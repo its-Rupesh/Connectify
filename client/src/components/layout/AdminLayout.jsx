@@ -19,6 +19,10 @@ import {
 import React, { useState } from "react";
 import { useLocation, Link as LinkComponent, Navigate } from "react-router-dom";
 import { grayColor, matBlack } from "../../constants/color";
+import { useDispatch, useSelector } from "react-redux";
+import { useAdminLogoutMutation } from "../../redux/api/api";
+import toast from "react-hot-toast";
+import { AdminNotExist } from "../../redux/reducers/auth";
 
 const Link = styled(LinkComponent)`
   text-decoration: none;
@@ -38,7 +42,27 @@ export const adminTabs = [
 
 const SideBar = ({ w = "100%" }) => {
   const location = useLocation();
-  const logoutHandler = () => {};
+
+  const dispatch = useDispatch();
+  const [AdminLogout] = useAdminLogoutMutation();
+
+  const logoutHandler = async () => {
+    try {
+      const res = await AdminLogout();
+      console.log(res);
+      if (res.data) {
+        toast.success(res.data.message);
+        dispatch(AdminNotExist());
+      } else {
+        toast.error(
+          res.error.data.message || "Something Went Wrong with Server"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something Went Wrong !!");
+    }
+  };
 
   return (
     <Stack width={w} spacing={"3rem"} direction={"column"} p={"3rem"}>
@@ -84,8 +108,10 @@ const SideBar = ({ w = "100%" }) => {
     </Stack>
   );
 };
-const isAdmin = true;
+
 const AdminLayout = ({ children }) => {
+  const { isAdmin } = useSelector((state) => state.auth);
+
   const [isMobile, setisMobile] = useState(false);
   const handleMobile = () => {
     setisMobile(!isMobile);
