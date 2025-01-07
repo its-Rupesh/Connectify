@@ -28,7 +28,7 @@ function App() {
       .get(`${server}/api/v1/user/me`, { withCredentials: true }) //api  call ki
       .then(({ data }) => dispatch(userExist(data.user)))
       .catch((err) => dispatch(userNotExist()));
-  }, [dispatch, user]);
+  }, [dispatch]);
   const preventRightClick = (e) => {
     e.preventDefault();
   };
