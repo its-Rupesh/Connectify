@@ -1,12 +1,13 @@
+import { useFetchData } from "6pp";
+import { Avatar, Box, Stack } from "@mui/material";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
-import AvatarCard from "../../components/shared/AvatarCard";
-import Table from "../../components/shared/Table";
-import { dashboardData } from "../../constants/sampleData";
-import { fileFormat, transformImage } from "../../lib/feature";
-import moment from "moment";
-import { Avatar, Box, Stack } from "@mui/material";
 import RenderAttachement from "../../components/shared/RenderAttachement";
+import Table from "../../components/shared/Table";
+import { server } from "../../constants/config";
+import { useErrors } from "../../hooks/hook";
+import { fileFormat, transformImage } from "../../lib/feature";
 const columns = [
   {
     field: "id",
@@ -80,11 +81,18 @@ const columns = [
   },
 ];
 const MessageManagement = () => {
+  const {
+    loading: isLoading,
+    data,
+    error,
+  } = useFetchData(`${server}/api/v1/admin/messages`, "dashboard-messages");
+  useErrors([{ isError: error, error: error }]);
+  console.log("messages-data", data);
   const [rows, setrows] = useState([]);
   useEffect(() => {
     // Ensure correct mapping for rows
     setrows(
-      dashboardData.messages.map((i) => ({
+      data?.message?.map((i) => ({
         ...i,
         id: i._id, // Unique identifier for each row
         sender: {
@@ -94,7 +102,7 @@ const MessageManagement = () => {
         createdAt: moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
       }))
     );
-  }, []);
+  }, [data]);
   return (
     <AdminLayout>
       <Table heading={"All Messages"} rows={rows} columns={columns} />

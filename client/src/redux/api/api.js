@@ -161,6 +161,12 @@ const api = createApi({
         credentials: "include",
       }),
     }),
+    adminStats: builder.query({
+      query: () => ({
+        url: "admin/stats",
+        credentials: "include",
+      }),
+    }),
   }),
 });
 export default api;
@@ -184,4 +190,5 @@ export const {
   useLeaveGroupMutation,
   useGetAdminQuery,
   useAdminLogoutMutation,
+  useAdminStatsQuery,
 } = api;

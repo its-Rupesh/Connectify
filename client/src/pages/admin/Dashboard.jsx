@@ -5,6 +5,7 @@ import {
   Box,
   Container,
   Paper,
+  Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -22,8 +23,19 @@ import {
   SearchField,
 } from "../../components/styles/styledComponent";
 import { LineChart, DoughnutChart } from "../../components/specific/Chart";
-
+import { useAdminStatsQuery } from "../../redux/api/api";
+import LayoutLoader from "../../components/layout/Loaders";
+import { useErrors } from "../../hooks/hook";
+import { useFetchData } from "6pp";
+import { server } from "../../constants/config";
 const DashBoard = () => {
+  const {
+    loading: isLoading,
+    data,
+    error,
+  } = useFetchData(`${server}/api/v1/admin/stats`, "dashboard-stats");
+  useErrors([{ isError: error, error: error }]);
+  console.log(data);
   const Appbar = (
     <Paper
       elevation={3}
@@ -81,12 +93,26 @@ const DashBoard = () => {
       alignItems={"center"}
       margin={"2rem 0"}
     >
-      <Widget title={"Users"} value={1} Icon={<PersonIcon />} />
-      <Widget title={"Chats"} value={2} Icon={<GroupIcon />} />
-      <Widget title={"Messages"} value={3} Icon={<MessageIcon />} />
+      <Widget
+        title={"Users"}
+        value={data?.message?.userCount}
+        Icon={<PersonIcon />}
+      />
+      <Widget
+        title={"Chats"}
+        value={data?.message?.totalChatscount}
+        Icon={<GroupIcon />}
+      />
+      <Widget
+        title={"Messages"}
+        value={data?.message?.messageCount}
+        Icon={<MessageIcon />}
+      />
     </Stack>
   );
-  return (
+  return isLoading ? (
+    <LayoutLoader />
+  ) : (
     <AdminLayout>
       <Container component={"main"}>
         {Appbar}
@@ -109,7 +135,7 @@ const DashBoard = () => {
             <Typography margin={"2rem 0"} variant="h4">
               Last Messages
             </Typography>
-            <LineChart value={[1, 2, 3, 4, 5, 6, 7]} />
+            <LineChart value={data?.message?.messageChart} />
           </Paper>
           <Paper
             elevation={3}
@@ -127,7 +153,10 @@ const DashBoard = () => {
           >
             <DoughnutChart
               labels={["Single Chats", "Group Chats"]}
-              value={[65, 35]}
+              value={[
+                data?.message?.totalChatscount - data?.message?.groupsCount,
+                data?.message?.groupsCount,
+              ]}
             />
             <Stack
               position={"absolute"}

@@ -19,7 +19,9 @@ const ChatList = ({
         );
         //console.log("newmessage", newMessageAlert);
         // Members online Hae ki nahi
-        const isOnline = members?.some((members) => onlineUsers.includes(_id));
+        const isOnline = members?.some((member) => onlineUsers.includes(_id));
+        console.log(isOnline);
+        console.log(onlineUsers, _id);
         return (
           <ChatItem
             index={index}

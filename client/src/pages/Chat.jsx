@@ -14,6 +14,8 @@ import MessageComponent from "../components/shared/MessageComponent";
 import { InputBox } from "../components/styles/styledComponent";
 import {
   ALERT,
+  CHAT_EXITED,
+  CHAT_JOINED,
   NEW_MESSAGE,
   START_TYPING,
   STOP_TYPING,
@@ -33,6 +35,7 @@ const Chat = ({ chatId, user }) => {
   const containerRef = useRef(null);
   const fileMenuRef = useRef(null);
   const bottomRef = useRef(null);
+  const typingTimeOut = useRef(null);
 
   const [messages, setmessage] = useState("");
   const [page, setpage] = useState(1);
@@ -41,15 +44,8 @@ const Chat = ({ chatId, user }) => {
   const [IamTyping, setIamTyping] = useState(false);
   const [userTyping, setUserTyping] = useState(false);
 
-  const typingTimeOut = useRef(null);
   const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
   const oldMessagesChunk = useGetMessagesQuery({ chatId, page });
-
-  const errors = [
-    { isError: chatDetails?.isError, error: chatDetails.error },
-    { isError: oldMessagesChunk?.isError, error: oldMessagesChunk.error },
-  ];
-  const members = chatDetails?.data?.chat?.members;
 
   const { data: oldMessages, setData: setOldMessages } = useInfiniteScrollTop(
     containerRef,
@@ -58,16 +54,50 @@ const Chat = ({ chatId, user }) => {
     setpage,
     oldMessagesChunk.data?.messages
   );
-  // console.log("oldMessages", oldMessages);
 
-  // Unmount all Chat data when user change the chat list or to change whom to chat
+  const errors = [
+    { isError: chatDetails?.isError, error: chatDetails.error },
+    { isError: oldMessagesChunk?.isError, error: oldMessagesChunk.error },
+  ];
+  const members = chatDetails?.data?.chat?.members;
+
+  const messageOnChangeHandler = (e) => {
+    setmessage(e.target.value);
+    if (!IamTyping) {
+      socket.emit(START_TYPING, { members, chatId });
+      setIamTyping(true);
+    }
+    if (typingTimeOut.current) clearTimeout(typingTimeOut.current);
+    typingTimeOut.current = setTimeout(() => {
+      socket.emit(STOP_TYPING, { members, chatId });
+      setIamTyping(false);
+    }, 2000);
+  };
+
+  const handleFileOpen = (e) => {
+    dispatch(setIsFileMenu(true));
+    setfileMenuanchor(e.currentTarget);
+  };
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    if (!messages.trim()) return;
+    //Emitting Message to Server
+    socket.emit(NEW_MESSAGE, { chatId, members, messages });
+    setmessage("");
+  };
+
   useEffect(() => {
+    if (chatDetails?.data?.chat?.members)
+      socket.emit(CHAT_JOINED, { userId: user._id, members });
     dispatch(removeNewMessageAlert(chatId));
     return () => {
       setmessage("");
       setpage(1);
       setShow_message([]);
       setOldMessages([]);
+      if (members)
+        socket.emit(CHAT_EXITED, { userId: user._id, members: members });
     };
   }, [chatId]);
 
@@ -83,26 +113,6 @@ const Chat = ({ chatId, user }) => {
   }, [chatDetails.isError]);
 
   // For user to show another user is writing
-  const messageOnChangeHandler = (e) => {
-    setmessage(e.target.value);
-    if (!IamTyping) {
-      socket.emit(START_TYPING, { members, chatId });
-      setIamTyping(true);
-    }
-    if (typingTimeOut.current) clearTimeout(typingTimeOut.current);
-    typingTimeOut.current = setTimeout(() => {
-      socket.emit(STOP_TYPING, { members, chatId });
-      setIamTyping(false);
-    }, 2000);
-  };
-
-  const submitHandler = (e) => {
-    e.preventDefault();
-    if (!messages.trim()) return;
-    //Emitting Message to Server
-    socket.emit(NEW_MESSAGE, { chatId, members, messages });
-    setmessage("");
-  };
 
   const newMessagesListener = useCallback(
     (data) => {
@@ -114,7 +124,6 @@ const Chat = ({ chatId, user }) => {
   const startTypingListner = useCallback(
     (data) => {
       if (data.chatId !== chatId) return;
-      console.log("Typing", data);
       setUserTyping(true);
     },
     [chatId]
@@ -122,7 +131,6 @@ const Chat = ({ chatId, user }) => {
   const stopTypingListner = useCallback(
     (data) => {
       if (data.chatId !== chatId) return;
-      console.log("Stop Typing", data);
       setUserTyping(false);
     },
     [chatId]
@@ -151,11 +159,6 @@ const Chat = ({ chatId, user }) => {
   };
 
   useSocketEvents(socket, eventHandler);
-
-  const handleFileOpen = (e) => {
-    dispatch(setIsFileMenu(true));
-    setfileMenuanchor(e.currentTarget);
-  };
 
   useErrors(errors);
   const allMessages = [...oldMessages, ...Show_message];

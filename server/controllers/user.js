@@ -16,8 +16,10 @@ const newUser = async (req, res, next) => {
   try {
     const { name, username, password, bio } = req.body;
     const file = req.file;
+    console.log("file", file);
     if (!file) return next(new ErrorHandler("File Not Present", 400));
     const result = await uploadFilesToCloudinary([file]);
+    console.log("result", result);
     const avatar = {
       public_id: result[0].public_id,
       url: result[0].url,

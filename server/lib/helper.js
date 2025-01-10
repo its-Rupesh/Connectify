@@ -7,7 +7,13 @@ const getSockets = (users) => {
   const sockets = users.map((user) => userSocketIDs.get(user.toString()));
   return sockets;
 };
+const getSocketsForUser = (users) => {
+  const sockets = users
+    .map((user) => userSocketIDs.get(user.toString()))
+    .filter(Boolean); // Filters out undefined values
+  return sockets;
+};
 const filePath = (file) => {
   return `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
 };
-export { getOtherMember, getSockets, filePath };
+export { getOtherMember, getSockets, filePath, getSocketsForUser };

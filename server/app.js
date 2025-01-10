@@ -3,17 +3,20 @@ import dotenv from "dotenv";
 import express from "express";
 import { errorMiddleware } from "./middlewares/error.js";
 import { connectDB } from "./utils/features.js";
-import { getSockets } from "../server/lib/helper.js";
+import { getSockets, getSocketsForUser } from "../server/lib/helper.js";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import chatRouter from "./routes/chat.js";
 import userRouter from "./routes/user.js";
 import adminRouter from "./routes/admin.js";
 import {
+  CHAT_EXITED,
+  CHAT_JOINED,
   NEW_MESSAGE,
   NEW_MESSAGE_ALERT,
   START_TYPING,
   STOP_TYPING,
+  ONLINE_USER,
 } from "./constants/events.js";
 import { v4 as uuid } from "uuid";
 import { Message } from "./models/message.js";
@@ -35,6 +38,7 @@ cloudinary.config({
 const adminKey = process.env.ADMIN_SECRET_KEY;
 // Map of Sockets id
 const userSocketIDs = new Map();
+const onlineUser = new Set();
 const app = express();
 //io socket creation
 const server = createServer(app);
@@ -97,15 +101,26 @@ io.on("connection", (socket) => {
     }
   });
   socket.on(START_TYPING, ({ members, chatId }) => {
-    console.log("Start Typing", chatId, members);
     const membersSocket = getSockets(members);
     socket.to(membersSocket).emit(START_TYPING, { chatId });
   });
   socket.on(STOP_TYPING, ({ members, chatId }) => {
-    console.log("Stop Typing", chatId, members);
-
     const membersSocket = getSockets(members);
     socket.to(membersSocket).emit(STOP_TYPING, { chatId });
+  });
+  socket.on(CHAT_JOINED, ({ userId, members }) => {
+    console.log("User Joined->", userId);
+    console.log(members);
+    onlineUser.add(userId.toString());
+    // console.log("onlineUser", onlineUser);
+    const memeberSocket = getSockets(members);
+    io.to(memeberSocket).emit(ONLINE_USER, Array.from(onlineUser));
+  });
+  socket.on(CHAT_EXITED, ({ userId, members }) => {
+    "User Existed->", userId;
+    onlineUser.delete(userId.toString());
+    const memeberSocket = getSockets(members);
+    io.to(memeberSocket).emit(ONLINE_USER, Array.from(onlineUser));
   });
   socket.on("disconnect", () => {
     userSocketIDs.delete(user._id.toString());

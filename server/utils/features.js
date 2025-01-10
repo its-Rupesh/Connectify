@@ -66,6 +66,7 @@ const uploadFilesToCloudinary = async (files = []) => {
     }));
     return formatedResult;
   } catch (error) {
+    console.log("error", error);
     throw new Error(`Error Ocuured at Uploading Files `, error);
   }
 };
